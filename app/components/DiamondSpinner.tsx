@@ -8,11 +8,11 @@ export default function DiamondSpinner() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
   const [hoveredWord, setHoveredWord] = useState<string | null>(null);
-  const [rotation, setRotation] = useState(0);
+  const [sphereRotation, setSphereRotation] = useState(0);
 
-  // Gentle auto-rotation - stops on hover
+  // Independent particle sphere rotation - always rotates
   useEffect(() => {
-    if (!isInView || hoveredWord) return;
+    if (!isInView) return;
 
     let rafId: number;
     let lastTime = Date.now();
@@ -22,16 +22,16 @@ export default function DiamondSpinner() {
       const delta = (now - lastTime) / 1000;
       lastTime = now;
 
-      setRotation(prev => prev + (12 * delta)); // 12 degrees per second
+      setSphereRotation(prev => prev + (15 * delta)); // 15 degrees per second
 
       rafId = requestAnimationFrame(animate);
     };
 
     rafId = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(rafId);
-  }, [isInView, hoveredWord]);
+  }, [isInView]);
 
-  // Premium use cases - carefully positioned
+  // Premium use cases - carefully positioned in 3D space
   const words = [
     // Core center
     { text: 'Deepfake Detection', size: 34, x: 0, y: 0, z: 50, category: 'core' },
@@ -41,6 +41,8 @@ export default function DiamondSpinner() {
     { text: 'Content Moderation', size: 22, x: 160, y: -80, z: 60, category: 'social' },
     { text: 'Identity Verification', size: 21, x: 0, y: -150, z: 60, category: 'finance' },
     { text: 'Fraud Prevention', size: 23, x: 0, y: 120, z: 60, category: 'finance' },
+    { text: 'Account Takeover Prevention', size: 20, x: -140, y: 100, z: 60, category: 'finance' },
+    { text: 'Profile Verification', size: 20, x: 140, y: 100, z: 60, category: 'social' },
 
     // Middle ring
     { text: 'Video Verification', size: 24, x: -200, y: 40, z: 0, category: 'tech' },
@@ -48,6 +50,10 @@ export default function DiamondSpinner() {
     { text: 'Real-time Detection', size: 20, x: -180, y: -150, z: 0, category: 'tech' },
     { text: 'Trust & Safety', size: 20, x: 180, y: -150, z: 0, category: 'social' },
     { text: 'Media Authentication', size: 19, x: 0, y: 180, z: 0, category: 'media' },
+    { text: 'Digital Evidence Verification', size: 18, x: -220, y: -100, z: 0, category: 'media' },
+    { text: 'Insurance Claims', size: 19, x: 220, y: -100, z: 0, category: 'finance' },
+    { text: 'Dating App Safety', size: 19, x: -200, y: 140, z: 0, category: 'social' },
+    { text: 'Customer Onboarding', size: 19, x: 200, y: 140, z: 0, category: 'enterprise' },
 
     // Outer ring - further back
     { text: 'CEO Fraud Defense', size: 18, x: -260, y: -40, z: -60, category: 'finance' },
@@ -56,6 +62,10 @@ export default function DiamondSpinner() {
     { text: 'UGC Verification', size: 18, x: 240, y: 120, z: -60, category: 'social' },
     { text: 'Source Verification', size: 18, x: 0, y: -220, z: -60, category: 'media' },
     { text: 'API Integration', size: 17, x: 0, y: 220, z: -60, category: 'tech' },
+    { text: 'Marketplace Trust', size: 17, x: -270, y: -160, z: -60, category: 'social' },
+    { text: 'Legal Tech', size: 18, x: 270, y: -160, z: -60, category: 'enterprise' },
+    { text: 'News Verification', size: 17, x: -250, y: 180, z: -60, category: 'media' },
+    { text: 'Healthcare ID Verification', size: 16, x: 250, y: 180, z: -60, category: 'enterprise' },
   ];
 
   const categoryColors = {
@@ -101,8 +111,42 @@ export default function DiamondSpinner() {
           className="relative h-[700px] flex items-center justify-center"
           style={{ perspective: '1400px' }}
         >
-          {/* Elegant center glow */}
+          {/* Independent rotating particle sphere */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <motion.div
+              className="relative w-[500px] h-[500px]"
+              style={{
+                transformStyle: 'preserve-3d',
+                transform: `rotateY(${sphereRotation}deg) rotateX(15deg)`,
+              }}
+            >
+              {/* Wireframe sphere particles */}
+              {Array.from({ length: 80 }).map((_, i) => {
+                const phi = Math.acos(-1 + (2 * i) / 80);
+                const theta = Math.sqrt(80 * Math.PI) * phi;
+                const x = 250 * Math.cos(theta) * Math.sin(phi);
+                const y = 250 * Math.sin(theta) * Math.sin(phi);
+                const z = 250 * Math.cos(phi);
+
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={isInView ? { opacity: 0.4, scale: 1 } : {}}
+                    transition={{ duration: 1, delay: i * 0.01 }}
+                    className="absolute w-1 h-1 rounded-full bg-bitmind-accent"
+                    style={{
+                      left: '50%',
+                      top: '50%',
+                      transform: `translate3d(${x}px, ${y}px, ${z}px)`,
+                      boxShadow: '0 0 8px rgba(0, 255, 136, 0.6)',
+                    }}
+                  />
+                );
+              })}
+            </motion.div>
+
+            {/* Center glow */}
             <motion.div
               animate={{
                 scale: [1, 1.08, 1],
@@ -113,20 +157,11 @@ export default function DiamondSpinner() {
             />
           </div>
 
-          {/* Word cloud with gentle rotation */}
+          {/* Static word cloud - no rotation */}
           <motion.div
             className="relative w-full h-full flex items-center justify-center"
             style={{
-              transform: `rotateY(${rotation}deg)`,
               transformStyle: 'preserve-3d',
-              willChange: 'transform',
-            }}
-            animate={{
-              rotateY: rotation
-            }}
-            transition={{
-              duration: 0.1,
-              ease: "linear"
             }}
           >
             {words.map((word, i) => {
