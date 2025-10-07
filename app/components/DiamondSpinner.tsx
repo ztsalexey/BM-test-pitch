@@ -164,27 +164,25 @@ export default function DiamondSpinner() {
           <h2 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
             One API, <span className="gradient-text">Infinite Use Cases</span>
           </h2>
-          {/* Fixed height container to prevent flickering */}
-          <div className="h-[32px] flex items-center justify-center mb-2">
-            <p className="text-xl text-white/60">
+          {/* Fixed height AND width container to prevent ANY flickering */}
+          <div className="h-[32px] w-full max-w-3xl mx-auto flex items-center justify-center mb-2">
+            <p className="text-xl text-white/60 absolute">
               {hoveredWord ? (
-                <motion.span
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="gradient-text font-semibold"
-                >
+                <span className="gradient-text font-semibold">
                   {hoveredWord}
-                </motion.span>
+                </span>
               ) : (
                 'Interactive 3D sphere · Hover to explore'
               )}
             </p>
           </div>
-          {!hoveredWord && (
-            <p className="text-sm text-white/40">
-              Auto-rotating · Move mouse to control
-            </p>
-          )}
+          <div className="h-[20px] flex items-center justify-center">
+            {!hoveredWord && (
+              <p className="text-sm text-white/40">
+                Auto-rotating · Move mouse to control
+              </p>
+            )}
+          </div>
         </motion.div>
 
         {/* 3D Word Sphere - Enhanced with orbits and particles */}
