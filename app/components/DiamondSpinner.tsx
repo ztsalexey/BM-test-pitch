@@ -9,61 +9,38 @@ export default function DiamondSpinner() {
   const isInView = useInView(ref, { once: true, amount: 0.3 });
   const [hoveredWord, setHoveredWord] = useState<string | null>(null);
 
-  // Generate INCEPTION SPINNING TOP - conical top with rounded tip
+  // Generate 3D SPHERE with dense mesh
   const { nodes, connections } = useMemo(() => {
     const nodesArray = [];
-    const layers = 35;
+    const latitudes = 20; // Horizontal layers
+    const longitudesPerLat = 24; // Points around each layer
 
-    for (let layer = 0; layer < layers; layer++) {
-      const t = layer / (layers - 1); // 0 to 1 (top to bottom)
+    for (let lat = 0; lat <= latitudes; lat++) {
+      const theta = (lat / latitudes) * Math.PI; // 0 to PI (top to bottom)
+      const y = Math.cos(theta) * 220; // Vertical position
+      const currentRadius = Math.sin(theta) * 220; // Radius at this latitude
 
-      let radius;
-      let y;
+      const numPoints = lat === 0 || lat === latitudes ? 1 : longitudesPerLat;
 
-      if (t < 0.15) {
-        // Rounded tip at top
-        const tipT = t / 0.15;
-        radius = 8 * tipT; // Small rounded tip
-        y = -280 + tipT * 40;
-      } else if (t < 0.85) {
-        // Main conical body - gradually widens
-        const bodyT = (t - 0.15) / 0.7;
-        radius = 8 + bodyT * 240; // 8 -> 248
-        y = -240 + bodyT * 460;
-      } else {
-        // Flat base at bottom
-        const baseT = (t - 0.85) / 0.15;
-        radius = 248;
-        y = 220 + baseT * 30;
-      }
+      for (let lon = 0; lon < numPoints; lon++) {
+        const phi = (lon / numPoints) * Math.PI * 2; // 0 to 2PI (around)
+        const x = Math.cos(phi) * currentRadius;
+        const z = Math.sin(phi) * currentRadius;
 
-      const numPoints = Math.max(4, Math.floor(radius / 12));
-
-      // Multiple concentric rings for dense mesh
-      const numRings = radius > 150 ? 4 : radius > 80 ? 3 : radius > 20 ? 2 : 1;
-
-      for (let ring = 0; ring < numRings; ring++) {
-        const ringRadius = radius * (1 - ring * 0.25);
-        const ringPoints = Math.max(4, Math.floor(numPoints * (1 - ring * 0.2)));
-
-        for (let i = 0; i < ringPoints; i++) {
-          const angle = (i / ringPoints) * Math.PI * 2 + ring * 0.25;
-          nodesArray.push({
-            x: Math.cos(angle) * ringRadius,
-            y: y,
-            z: Math.sin(angle) * ringRadius,
-            layer,
-            ring,
-            isTip: t < 0.15,
-            isBase: t > 0.85,
-          });
-        }
+        nodesArray.push({
+          x,
+          y,
+          z,
+          lat,
+          lon,
+          isPole: lat === 0 || lat === latitudes,
+        });
       }
     }
 
     // Generate connections
     const connectionsArray = [];
-    const maxDistance = 65;
+    const maxDistance = 70;
 
     for (let i = 0; i < nodesArray.length; i++) {
       for (let j = i + 1; j < nodesArray.length; j++) {
@@ -85,33 +62,33 @@ export default function DiamondSpinner() {
     return { nodes: nodesArray, connections: connectionsArray };
   }, []);
 
-  // Use cases - some inside, some outside the spinning top
+  // Use cases - positioned around sphere
   const useCases = [
-    // Core - inside/near the top
-    { text: 'Deepfake Detection', x: 0, y: -320, z: 0, isCore: true, color: '#00FF88' },
+    // Core - top
+    { text: 'Deepfake Detection', offsetX: 0, offsetY: -0.45, isCore: true, color: '#00FF88' },
 
-    // Upper ring - outside
-    { text: 'KYC Verification', x: 280, y: -180, z: 0, isCore: false, color: '#FFD700' },
-    { text: 'Identity Verification', x: -280, y: -180, z: 0, isCore: false, color: '#A78BFA' },
-    { text: 'Age Verification', x: 0, y: -180, z: 280, isCore: false, color: '#00FFFF' },
+    // Upper ring
+    { text: 'KYC Verification', offsetX: 0.4, offsetY: -0.3, isCore: false, color: '#FFD700' },
+    { text: 'Identity Verification', offsetX: -0.4, offsetY: -0.3, isCore: false, color: '#A78BFA' },
+    { text: 'Age Verification', offsetX: 0.2, offsetY: -0.35, isCore: false, color: '#00FFFF' },
+    { text: 'Document Verification', offsetX: -0.2, offsetY: -0.35, isCore: false, color: '#FF6B9D' },
 
-    // Middle ring - outside
-    { text: 'Content Moderation', x: 320, y: 0, z: 0, isCore: false, color: '#FF6B9D' },
-    { text: 'Media Authentication', x: -320, y: 0, z: 0, isCore: false, color: '#00D4FF' },
-    { text: 'Brand Protection', x: 0, y: 0, z: 320, isCore: false, color: '#88FF00' },
-    { text: 'Trust & Safety', x: 0, y: 0, z: -320, isCore: false, color: '#FF88FF' },
+    // Middle ring
+    { text: 'Content Moderation', offsetX: 0.45, offsetY: -0.05, isCore: false, color: '#FF6B9D' },
+    { text: 'Media Authentication', offsetX: -0.45, offsetY: -0.05, isCore: false, color: '#00D4FF' },
+    { text: 'Brand Protection', offsetX: 0.45, offsetY: 0.1, isCore: false, color: '#88FF00' },
+    { text: 'Trust & Safety', offsetX: -0.45, offsetY: 0.1, isCore: false, color: '#FF88FF' },
 
-    // Lower ring - outside
-    { text: 'Fraud Prevention', x: 300, y: 180, z: 0, isCore: false, color: '#FFA500' },
-    { text: 'Video Forensics', x: -300, y: 180, z: 0, isCore: false, color: '#FF1493' },
-    { text: 'Live Stream Safety', x: 0, y: 180, z: 300, isCore: false, color: '#7FFF00' },
-    { text: 'Social Media Protection', x: 0, y: 180, z: -300, isCore: false, color: '#BA55D3' },
+    // Lower ring
+    { text: 'Fraud Prevention', offsetX: 0.4, offsetY: 0.3, isCore: false, color: '#FFA500' },
+    { text: 'Video Forensics', offsetX: -0.4, offsetY: 0.3, isCore: false, color: '#FF1493' },
+    { text: 'Live Stream Safety', offsetX: 0.2, offsetY: 0.35, isCore: false, color: '#7FFF00' },
+    { text: 'Social Media Protection', offsetX: -0.2, offsetY: 0.35, isCore: false, color: '#BA55D3' },
 
-    // Base ring - outside wider
-    { text: 'Enterprise Security', x: 340, y: 280, z: 0, isCore: false, color: '#00CED1' },
-    { text: 'Government ID', x: -340, y: 280, z: 0, isCore: false, color: '#FFB6C1' },
-    { text: 'Financial Services', x: 240, y: 280, z: 240, isCore: false, color: '#DDA0DD' },
-    { text: 'Healthcare Compliance', x: -240, y: 280, z: 240, isCore: false, color: '#F0E68C' },
+    // Bottom ring
+    { text: 'Enterprise Security', offsetX: 0.35, offsetY: 0.45, isCore: false, color: '#00CED1' },
+    { text: 'Government ID', offsetX: -0.35, offsetY: 0.45, isCore: false, color: '#FFB6C1' },
+    { text: 'Financial Services', offsetX: 0, offsetY: 0.48, isCore: false, color: '#DDA0DD' },
   ];
 
   return (
@@ -121,71 +98,74 @@ export default function DiamondSpinner() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-12 md:mb-16"
         >
-          <h2 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 tracking-tight">
             Universal <span className="gradient-text">Use Cases</span>
           </h2>
-          <p className="text-xl text-white/60">
-            {hoveredWord || 'AI-powered deepfake detection across industries'}
-          </p>
+          {/* Fixed height container to prevent flickering */}
+          <div className="h-[28px] md:h-[32px] flex items-center justify-center">
+            <p className="text-lg md:text-xl text-white/60">
+              {hoveredWord || 'AI-powered deepfake detection across industries'}
+            </p>
+          </div>
         </motion.div>
 
-        {/* Inception Spinning Top */}
-        <div className="relative h-[800px] flex items-center justify-center">
+        {/* 3D Sphere - Responsive Container */}
+        <div className="relative w-full h-[600px] sm:h-[700px] lg:h-[800px] flex items-center justify-center">
           <div
-            className="relative w-full h-full"
+            className="relative w-full h-full max-w-[900px] mx-auto"
             style={{
               perspective: '1400px',
               perspectiveOrigin: '50% 50%',
             }}
           >
-            {/* Rotating spinning top */}
+            {/* Rotating sphere */}
             <motion.div
               animate={{
                 rotateY: 360,
               }}
               transition={{
-                rotateY: { duration: 18, repeat: Infinity, ease: "linear" },
+                rotateY: { duration: 25, repeat: Infinity, ease: "linear" },
               }}
               className="absolute inset-0 flex items-center justify-center"
               style={{
                 transformStyle: 'preserve-3d',
-                transform: 'rotateX(65deg) rotateZ(0deg)',
+                transform: 'rotateX(15deg) rotateZ(0deg)', // Slight tilt for depth
                 willChange: 'transform',
               }}
             >
               {/* SVG mesh */}
               <svg
-                viewBox="-450 -450 900 900"
-                className="absolute"
+                viewBox="-400 -400 800 800"
+                className="absolute w-full h-full"
+                preserveAspectRatio="xMidYMid meet"
                 style={{
-                  width: '100%',
-                  height: '100%',
                   filter: 'drop-shadow(0 0 30px rgba(0, 255, 136, 0.25)) drop-shadow(0 0 60px rgba(0, 212, 255, 0.15))',
                 }}
               >
                 <defs>
-                  <linearGradient id="topGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#00FF88" stopOpacity="0.25" />
-                    <stop offset="50%" stopColor="#00D4FF" stopOpacity="0.35" />
-                    <stop offset="100%" stopColor="#A78BFA" stopOpacity="0.2" />
+                  <linearGradient id="sphereGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#00FF88" stopOpacity="0.3" />
+                    <stop offset="50%" stopColor="#00D4FF" stopOpacity="0.4" />
+                    <stop offset="100%" stopColor="#A78BFA" stopOpacity="0.25" />
                   </linearGradient>
-                  <radialGradient id="nodeGradTop">
+                  <radialGradient id="nodeGradSphere">
                     <stop offset="0%" stopColor="#00FF88" stopOpacity="1" />
                     <stop offset="100%" stopColor="#00D4FF" stopOpacity="0.7" />
                   </radialGradient>
-                  <linearGradient id="tipGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#00FF88" stopOpacity="0.9" />
-                    <stop offset="100%" stopColor="#00D4FF" stopOpacity="0.6" />
-                  </linearGradient>
+                  <radialGradient id="poleGrad">
+                    <stop offset="0%" stopColor="#00FF88" stopOpacity="1" />
+                    <stop offset="50%" stopColor="#00D4FF" stopOpacity="0.9" />
+                    <stop offset="100%" stopColor="#A78BFA" stopOpacity="0.7" />
+                  </radialGradient>
                 </defs>
 
                 {/* Connections - transparent mesh */}
                 {connections.map((conn, i) => {
                   const from = nodes[conn.from];
                   const to = nodes[conn.to];
-                  const opacity = 0.08 + (1 - conn.distance / 65) * 0.18;
+                  const opacity = 0.1 + (1 - conn.distance / 70) * 0.2;
 
                   return (
                     <line
@@ -194,8 +174,8 @@ export default function DiamondSpinner() {
                       y1={from.y}
                       x2={to.x}
                       y2={to.y}
-                      stroke="url(#topGrad)"
-                      strokeWidth="0.7"
+                      stroke="url(#sphereGrad)"
+                      strokeWidth="0.8"
                       strokeOpacity={opacity}
                       strokeLinecap="round"
                     />
@@ -204,8 +184,8 @@ export default function DiamondSpinner() {
 
                 {/* Nodes */}
                 {nodes.map((node, i) => {
-                  const isHighlight = i % 7 === 0 || node.isTip || node.isBase;
-                  const size = node.isTip ? 5 : node.isBase ? 3.5 : isHighlight ? 2.8 : 1.8;
+                  const isHighlight = i % 5 === 0 || node.isPole;
+                  const size = node.isPole ? 6 : isHighlight ? 3.5 : 2;
 
                   return (
                     <circle
@@ -213,13 +193,13 @@ export default function DiamondSpinner() {
                       cx={node.x}
                       cy={node.y}
                       r={size}
-                      fill={node.isTip ? "url(#tipGrad)" : isHighlight ? "url(#nodeGradTop)" : "#ffffff"}
-                      opacity={node.isTip ? 1 : isHighlight ? 0.75 : 0.5}
+                      fill={node.isPole ? "url(#poleGrad)" : isHighlight ? "url(#nodeGradSphere)" : "#ffffff"}
+                      opacity={node.isPole ? 1 : isHighlight ? 0.8 : 0.55}
                       style={{
-                        filter: node.isTip
-                          ? 'drop-shadow(0 0 12px #00FF88) drop-shadow(0 0 20px #00D4FF)'
+                        filter: node.isPole
+                          ? 'drop-shadow(0 0 15px #00FF88) drop-shadow(0 0 25px #00D4FF)'
                           : isHighlight
-                          ? 'drop-shadow(0 0 6px rgba(0, 255, 136, 0.7))'
+                          ? 'drop-shadow(0 0 8px rgba(0, 255, 136, 0.7))'
                           : 'none',
                       }}
                     />
@@ -228,7 +208,7 @@ export default function DiamondSpinner() {
               </svg>
             </motion.div>
 
-            {/* Use case labels - 3D positioned */}
+            {/* Use case labels - Responsive positioning */}
             {useCases.map((item, i) => {
               const isHovered = hoveredWord === item.text;
 
@@ -238,26 +218,27 @@ export default function DiamondSpinner() {
                   initial={{ opacity: 0, scale: 0.6 }}
                   animate={isInView ? {
                     opacity: hoveredWord && !isHovered ? 0.25 : 1,
-                    scale: isHovered ? 1.15 : 1,
+                    scale: 1, // No scale change on hover to prevent flickering
                   } : { opacity: 0, scale: 0.6 }}
                   transition={{
                     duration: 0.7,
                     delay: 0.8 + i * 0.06,
-                    scale: { duration: 0.2, ease: "easeOut" }
                   }}
                   className="absolute cursor-pointer whitespace-nowrap select-none z-10"
                   style={{
-                    left: `calc(50% + ${item.x}px)`,
-                    top: `calc(50% + ${item.y}px)`,
-                    transform: 'translate(-50%, -50%)',
+                    left: '50%',
+                    top: '50%',
+                    transform: `translate(calc(-50% + ${item.offsetX * 100}%), calc(-50% + ${item.offsetY * 100}%))`,
                   }}
                   onMouseEnter={() => setHoveredWord(item.text)}
                   onMouseLeave={() => setHoveredWord(null)}
                 >
                   <div
-                    className="relative px-3 py-1.5 rounded-md backdrop-blur-md transition-all duration-200"
+                    className="relative px-2 sm:px-3 py-1 sm:py-1.5 rounded-md backdrop-blur-md transition-all duration-200"
                     style={{
-                      fontSize: item.isCore ? (isHovered ? '24px' : '20px') : (isHovered ? '18px' : '14px'),
+                      fontSize: item.isCore
+                        ? 'clamp(16px, 2.5vw, 20px)'
+                        : 'clamp(11px, 1.5vw, 14px)',
                       color: isHovered ? item.color : '#fff',
                       textShadow: isHovered
                         ? `0 0 25px ${item.color}, 0 0 45px ${item.color}90`
@@ -300,12 +281,10 @@ export default function DiamondSpinner() {
             })}
 
             {/* Energy particles orbiting */}
-            {[...Array(70)].map((_, i) => {
-              const angle = (i / 70) * Math.PI * 2;
-              const radiusVar = 180 + Math.random() * 200;
-              const heightVar = (Math.random() - 0.5) * 400;
-              const x = Math.cos(angle) * radiusVar;
-              const y = heightVar;
+            {[...Array(60)].map((_, i) => {
+              const angle = (i / 60) * Math.PI * 2;
+              const radiusPercent = 0.25 + Math.random() * 0.25;
+              const heightPercent = (Math.random() - 0.5) * 0.5;
 
               return (
                 <motion.div
@@ -323,8 +302,9 @@ export default function DiamondSpinner() {
                   }}
                   className="absolute w-1 h-1 rounded-full pointer-events-none"
                   style={{
-                    left: `calc(50% + ${x}px)`,
-                    top: `calc(50% + ${y}px)`,
+                    left: '50%',
+                    top: '50%',
+                    transform: `translate(calc(-50% + ${Math.cos(angle) * radiusPercent * 100}%), calc(-50% + ${heightPercent * 100}%))`,
                     background: i % 4 === 0 ? '#00FF88' : i % 4 === 1 ? '#00D4FF' : i % 4 === 2 ? '#A78BFA' : '#FFD700',
                     boxShadow: `0 0 12px ${i % 4 === 0 ? '#00FF88' : i % 4 === 1 ? '#00D4FF' : i % 4 === 2 ? '#A78BFA' : '#FFD700'}`,
                   }}
