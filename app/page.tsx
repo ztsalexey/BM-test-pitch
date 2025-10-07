@@ -5,7 +5,7 @@ import Hero from './components/Hero';
 import SpotTheFake from './components/SpotTheFake';
 import Solution from './components/Solution';
 import LiveDemo from './components/LiveDemo';
-import UseCasesSpinner from './components/UseCasesSpinner';
+import DiamondSpinner from './components/DiamondSpinner';
 import Pricing from './components/Pricing';
 import CTA from './components/CTA';
 
@@ -18,7 +18,7 @@ export default function Home() {
         <SpotTheFake />
         <Solution />
         <LiveDemo />
-        <UseCasesSpinner />
+        <DiamondSpinner />
         <Pricing />
         <CTA />
       </div>
