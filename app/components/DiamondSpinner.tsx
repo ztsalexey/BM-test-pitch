@@ -97,7 +97,7 @@ export default function DiamondSpinner() {
                   {hoveredWord}
                 </span>
               ) : (
-                'Hover to explore · Auto-rotating 3D sphere'
+                'Hover to explore'
               )}
             </p>
           </div>
@@ -113,15 +113,74 @@ export default function DiamondSpinner() {
         >
           {/* Independent rotating particle sphere - encompasses use cases */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            {/* Center glow - behind everything */}
-            <motion.div
-              animate={{
-                scale: [1, 1.08, 1],
-                opacity: [0.12, 0.2, 0.12],
-              }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              className="w-[500px] h-[500px] bg-gradient-to-r from-bitmind-accent/40 to-cyan-500/40 rounded-full blur-3xl"
-            />
+            {/* Ambient particle cloud - volumetric 3D space */}
+            <div className="absolute w-[600px] h-[600px]">
+              {Array.from({ length: 60 }).map((_, i) => {
+                const angle = (i / 60) * Math.PI * 2;
+                const radius = 180 + Math.random() * 120;
+                const x = Math.cos(angle) * radius + (Math.random() - 0.5) * 80;
+                const y = Math.sin(angle) * radius + (Math.random() - 0.5) * 80;
+                const size = 1 + Math.random() * 2;
+                const opacity = 0.1 + Math.random() * 0.2;
+
+                return (
+                  <motion.div
+                    key={`ambient-${i}`}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={isInView ? {
+                      opacity: [opacity, opacity * 1.5, opacity],
+                      scale: [1, 1.2, 1],
+                    } : {}}
+                    transition={{
+                      duration: 4 + Math.random() * 4,
+                      repeat: Infinity,
+                      delay: i * 0.03,
+                      ease: "easeInOut"
+                    }}
+                    className="absolute rounded-full bg-gradient-to-br from-bitmind-accent to-cyan-400"
+                    style={{
+                      left: '50%',
+                      top: '50%',
+                      width: `${size}px`,
+                      height: `${size}px`,
+                      transform: `translate(${x}px, ${y}px)`,
+                      boxShadow: `0 0 ${size * 4}px rgba(0, 255, 136, ${opacity * 0.6})`,
+                    }}
+                  />
+                );
+              })}
+            </div>
+
+            {/* Floating energy wisps */}
+            {Array.from({ length: 8 }).map((_, i) => {
+              const angle = (i / 8) * Math.PI * 2;
+              const radius = 200;
+
+              return (
+                <motion.div
+                  key={`wisp-${i}`}
+                  initial={{ opacity: 0 }}
+                  animate={isInView ? {
+                    opacity: [0.1, 0.3, 0.1],
+                    x: [Math.cos(angle) * radius, Math.cos(angle + 0.5) * (radius + 50)],
+                    y: [Math.sin(angle) * radius, Math.sin(angle + 0.5) * (radius + 50)],
+                  } : {}}
+                  transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    delay: i * 0.3,
+                    ease: "easeInOut"
+                  }}
+                  className="absolute w-20 h-20 rounded-full"
+                  style={{
+                    left: '50%',
+                    top: '50%',
+                    background: `radial-gradient(circle, rgba(0,255,136,0.15) 0%, transparent 70%)`,
+                    filter: 'blur(8px)',
+                  }}
+                />
+              );
+            })}
 
             {/* Rotating 3D particle sphere */}
             <motion.div
