@@ -10,7 +10,7 @@ export default function Solution() {
 
   const features = [
     {
-      icon: '🎯',
+      icon: '◉',
       title: '88% Accuracy',
       description: 'vs 69% industry standard',
     },
@@ -20,12 +20,12 @@ export default function Solution() {
       description: '<100ms detection for images',
     },
     {
-      icon: '🔒',
+      icon: '◈',
       title: 'Zero Retention',
       description: 'GDPR compliant, no data stored',
     },
     {
-      icon: '🌐',
+      icon: '◐',
       title: 'Images + Videos',
       description: 'Detect across all media types',
     },

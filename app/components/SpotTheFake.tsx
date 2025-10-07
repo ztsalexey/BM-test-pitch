@@ -99,9 +99,9 @@ export default function SpotTheFake() {
           >
             {selectedImage === 2 ? (
               <>
-                <div className="text-7xl mb-6">✓</div>
+                <div className="text-9xl mb-6 gradient-text font-bold">◉</div>
                 <h3 className="text-4xl font-bold gradient-text mb-4">
-                  Correct!
+                  Perfect Detection
                 </h3>
                 <p className="text-xl text-white/70 mb-8 max-w-xl mx-auto">
                   Image B was AI-generated. But could you tell in real-time?
@@ -109,12 +109,12 @@ export default function SpotTheFake() {
               </>
             ) : (
               <>
-                <div className="text-7xl mb-6 text-red-500">✗</div>
+                <div className="text-9xl mb-6 text-red-400 font-bold">◎</div>
                 <h3 className="text-4xl font-bold text-red-400 mb-4">
-                  Wrong
+                  Almost There
                 </h3>
                 <p className="text-xl text-white/70 mb-8 max-w-xl mx-auto">
-                  Image B was the deepfake. Even experts struggle.
+                  Image B was the deepfake. Even experts struggle—that's why BitMind exists.
                 </p>
               </>
             )}

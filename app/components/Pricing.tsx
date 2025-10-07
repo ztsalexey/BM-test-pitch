@@ -9,10 +9,10 @@ export default function Pricing() {
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
   const tiers = [
-    { name: 'Public API', icon: '🌐', href: 'https://app.bitmind.ai' },
-    { name: 'Enterprise', icon: '🏢', href: 'https://bitmind.ai', highlighted: true },
-    { name: 'Custom', icon: '⚙️', href: 'https://bitmind.ai' },
-    { name: 'Mega Custom', icon: '🚀', href: 'https://bitmind.ai' },
+    { name: 'Public API', icon: '◯', href: 'https://app.bitmind.ai' },
+    { name: 'Enterprise', icon: '◆', href: 'https://bitmind.ai', highlighted: true },
+    { name: 'Custom', icon: '◈', href: 'https://bitmind.ai' },
+    { name: 'Mega Custom', icon: '◉', href: 'https://bitmind.ai' },
   ];
 
   return (

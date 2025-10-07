@@ -84,7 +84,7 @@ export default function LiveDemo() {
               className="hidden"
             />
             <label htmlFor="file-input" className="cursor-pointer">
-              <div className="text-6xl mb-4">📤</div>
+              <div className="text-8xl mb-4 font-bold text-bitmind-accent/40">↑</div>
               <p className="text-xl font-semibold mb-2 text-white/90">Drop a file or click to upload</p>
               <p className="text-white/40">Supports images and videos</p>
             </label>
@@ -125,7 +125,7 @@ export default function LiveDemo() {
                         : 'bg-green-500/20 text-green-400 border-2 border-green-500'
                     }`}
                   >
-                    {result.isAI ? '🚨 Likely AI-Generated' : '✅ Likely Authentic'}
+                    {result.isAI ? '◉ AI-Generated' : '◎ Authentic'}
                   </div>
                 </div>
                 <button

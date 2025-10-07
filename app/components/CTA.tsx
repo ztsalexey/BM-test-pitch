@@ -9,14 +9,14 @@ export default function CTA() {
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
   const resources = [
-    { name: 'BitMind.ai', url: 'https://bitmind.ai', icon: '🌐', desc: 'Main Website' },
-    { name: 'Live Platform', url: 'https://app.bitmind.ai', icon: '🎯', desc: 'Try Detection' },
-    { name: 'TheDetector.ai', url: 'https://thedetector.ai', icon: '🔍', desc: 'Web App' },
-    { name: 'Documentation', url: 'https://docs.bitmind.ai', icon: '📚', desc: 'API Docs' },
-    { name: 'Mobile App iOS', url: 'https://apps.apple.com/us/app/ai-or-not-ai-detection/id6742792714', icon: '📱', desc: 'App Store' },
-    { name: 'Mobile App Android', url: 'https://play.google.com/store/apps/details?id=ai.bitmind.game', icon: '🤖', desc: 'Play Store' },
-    { name: 'GitHub', url: 'https://github.com/BitMind-AI', icon: '💻', desc: 'Open Source' },
-    { name: 'Twitter', url: 'https://x.com/BitMindLabs', icon: '🐦', desc: '@BitMindLabs' },
+    { name: 'BitMind.ai', url: 'https://bitmind.ai', icon: '◉', desc: 'Main Website' },
+    { name: 'Live Platform', url: 'https://app.bitmind.ai', icon: '◎', desc: 'Try Detection' },
+    { name: 'TheDetector.ai', url: 'https://thedetector.ai', icon: '◈', desc: 'Web App' },
+    { name: 'Documentation', url: 'https://docs.bitmind.ai', icon: '◪', desc: 'API Docs' },
+    { name: 'Mobile App iOS', url: 'https://apps.apple.com/us/app/ai-or-not-ai-detection/id6742792714', icon: '◐', desc: 'App Store' },
+    { name: 'Mobile App Android', url: 'https://play.google.com/store/apps/details?id=ai.bitmind.game', icon: '◑', desc: 'Play Store' },
+    { name: 'GitHub', url: 'https://github.com/BitMind-AI', icon: '◧', desc: 'Open Source' },
+    { name: 'Twitter', url: 'https://x.com/BitMindLabs', icon: '◭', desc: '@BitMindLabs' },
   ];
 
   return (
