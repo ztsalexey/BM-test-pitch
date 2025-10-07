@@ -2,49 +2,63 @@
 
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 export default function UseCases() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
   const [hoveredWord, setHoveredWord] = useState<string | null>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  // Use case keywords with positioning and sizes
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (ref.current) {
+        const rect = (ref.current as HTMLElement).getBoundingClientRect();
+        setMousePos({
+          x: ((e.clientX - rect.left) / rect.width - 0.5) * 20,
+          y: ((e.clientY - rect.top) / rect.height - 0.5) * 20,
+        });
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Use case keywords arranged in 3D sphere
   const words = [
-    // Core detection
-    { text: 'Deepfake Detection', size: 32, x: 0, y: 0, category: 'core' },
-    { text: 'Video Verification', size: 24, x: -200, y: -100, category: 'core' },
-    { text: 'Image Analysis', size: 24, x: 200, y: -120, category: 'core' },
+    // Center core
+    { text: 'Deepfake Detection', size: 36, x: 0, y: 0, z: 0, category: 'core' },
 
-    // Finance & Security
-    { text: 'KYC Verification', size: 20, x: -280, y: 40, category: 'finance' },
-    { text: 'Fraud Prevention', size: 22, x: 260, y: 60, category: 'finance' },
-    { text: 'Identity Verification', size: 18, x: -150, y: 140, category: 'finance' },
-    { text: 'Wire Transfer Protection', size: 16, x: 180, y: 150, category: 'finance' },
-    { text: 'CEO Fraud Defense', size: 18, x: -240, y: -180, category: 'finance' },
+    // Inner ring
+    { text: 'KYC Verification', size: 24, x: -150, y: -80, z: 50, category: 'finance' },
+    { text: 'Content Moderation', size: 24, x: 150, y: -80, z: 50, category: 'social' },
+    { text: 'Fraud Prevention', size: 26, x: 0, y: 120, z: 50, category: 'finance' },
+    { text: 'Identity Verification', size: 22, x: 0, y: -140, z: 50, category: 'finance' },
 
-    // Social & Content
-    { text: 'Content Moderation', size: 20, x: 280, y: -60, category: 'social' },
-    { text: 'UGC Verification', size: 18, x: -100, y: -220, category: 'social' },
-    { text: 'Scam Detection', size: 19, x: 120, y: -200, category: 'social' },
-    { text: 'Trust & Safety', size: 17, x: 320, y: 120, category: 'social' },
+    // Middle ring
+    { text: 'Video Verification', size: 28, x: -200, y: 60, z: -30, category: 'core' },
+    { text: 'Image Analysis', size: 28, x: 200, y: 60, z: -30, category: 'core' },
+    { text: 'Similarity Score', size: 20, x: -180, y: -140, z: -30, category: 'tech' },
+    { text: 'Real-time Detection', size: 21, x: 180, y: -140, z: -30, category: 'tech' },
 
-    // Media & News
-    { text: 'Source Verification', size: 19, x: -320, y: 120, category: 'media' },
-    { text: 'Fact Checking', size: 18, x: 100, y: 220, category: 'media' },
-    { text: 'News Integrity', size: 17, x: -180, y: 200, category: 'media' },
+    // Outer ring
+    { text: 'CEO Fraud Defense', size: 19, x: -280, y: -40, z: -80, category: 'finance' },
+    { text: 'Wire Transfer Protection', size: 17, x: 280, y: -40, z: -80, category: 'finance' },
+    { text: 'UGC Verification', size: 20, x: -240, y: 120, z: -80, category: 'social' },
+    { text: 'Trust & Safety', size: 19, x: 240, y: 120, z: -80, category: 'social' },
+    { text: 'Source Verification', size: 20, x: 0, y: -220, z: -80, category: 'media' },
+    { text: 'Fact Checking', size: 19, x: 0, y: 220, z: -80, category: 'media' },
 
-    // Enterprise
-    { text: 'Video Call Auth', size: 18, x: -60, y: 240, category: 'enterprise' },
-    { text: 'Compliance', size: 19, x: 240, y: -180, category: 'enterprise' },
-    { text: 'Remote Hiring', size: 16, x: -340, y: -40, category: 'enterprise' },
-    { text: 'Insider Threat', size: 16, x: 340, y: -20, category: 'enterprise' },
-
-    // Tech
-    { text: 'API Integration', size: 17, x: 60, y: -260, category: 'tech' },
-    { text: 'Batch Processing', size: 16, x: -240, y: 180, category: 'tech' },
-    { text: 'Real-time Detection', size: 18, x: 220, y: 200, category: 'tech' },
-    { text: 'Similarity Score', size: 17, x: -120, y: -280, category: 'tech' },
+    // Far edges
+    { text: 'Scam Detection', size: 18, x: -320, y: 80, z: -120, category: 'social' },
+    { text: 'Compliance', size: 20, x: 320, y: 80, z: -120, category: 'enterprise' },
+    { text: 'Video Call Auth', size: 18, x: -300, y: -120, z: -120, category: 'enterprise' },
+    { text: 'Remote Hiring', size: 17, x: 300, y: -120, z: -120, category: 'enterprise' },
+    { text: 'News Integrity', size: 18, x: 0, y: 280, z: -120, category: 'media' },
+    { text: 'API Integration', size: 17, x: 0, y: -280, z: -120, category: 'tech' },
+    { text: 'Batch Processing', size: 16, x: -160, y: 240, z: -120, category: 'tech' },
+    { text: 'Insider Threat', size: 16, x: 160, y: 240, z: -120, category: 'enterprise' },
   ];
 
   const categoryColors = {
@@ -62,58 +76,68 @@ export default function UseCases() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-5xl md:text-6xl font-bold mb-6">
-            Built for <span className="gradient-text">Everything</span>
+          <h2 className="text-5xl md:text-7xl font-bold mb-6">
+            One API, <span className="gradient-text">Infinite Use Cases</span>
           </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            One API, infinite use cases.
+          <p className="text-xl text-gray-400">
+            Hover to explore
           </p>
         </motion.div>
 
-        {/* Interactive Word Sphere */}
+        {/* 3D Word Sphere */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 1 }}
-          className="relative h-[600px] flex items-center justify-center overflow-hidden"
+          className="relative h-[700px] flex items-center justify-center overflow-hidden"
+          style={{ perspective: '1000px' }}
         >
           {/* Center glow effect */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-96 h-96 bg-bitmind-accent/5 rounded-full blur-3xl" />
+            <div className="w-96 h-96 bg-bitmind-accent/10 rounded-full blur-3xl animate-pulse" />
           </div>
 
-          {/* Word cloud */}
-          <div className="relative w-full h-full flex items-center justify-center">
+          {/* Word cloud with 3D transform */}
+          <div
+            className="relative w-full h-full flex items-center justify-center transition-transform duration-200 ease-out"
+            style={{
+              transform: `rotateX(${-mousePos.y}deg) rotateY(${mousePos.x}deg)`,
+              transformStyle: 'preserve-3d',
+            }}
+          >
             {words.map((word, i) => {
-              const delay = i * 0.05;
+              const delay = i * 0.03;
               const color = categoryColors[word.category as keyof typeof categoryColors];
+              const scale = 1 + word.z / 500; // Closer items are larger
 
               return (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, scale: 0 }}
                   animate={isInView ? {
-                    opacity: hoveredWord && hoveredWord !== word.text ? 0.3 : 1,
-                    scale: hoveredWord === word.text ? 1.2 : 1
+                    opacity: hoveredWord && hoveredWord !== word.text ? 0.2 : (0.4 + word.z / 300),
+                    scale: hoveredWord === word.text ? scale * 1.3 : scale
                   } : {}}
                   transition={{
                     duration: 0.6,
                     delay,
                     scale: { duration: 0.2 }
                   }}
-                  className="absolute cursor-pointer transition-all duration-200"
+                  className="absolute cursor-pointer transition-all duration-200 whitespace-nowrap"
                   style={{
-                    left: `calc(50% + ${word.x * 0.8}px)`,
-                    top: `calc(50% + ${word.y * 0.8}px)`,
-                    fontSize: `${word.size}px`,
+                    left: `calc(50% + ${word.x}px)`,
+                    top: `calc(50% + ${word.y}px)`,
+                    transform: `translateZ(${word.z}px) translate(-50%, -50%)`,
+                    fontSize: `${word.size * scale}px`,
                     color: hoveredWord === word.text ? color : '#fff',
                     textShadow: hoveredWord === word.text
-                      ? `0 0 20px ${color}`
-                      : '0 0 10px rgba(0,255,136,0.3)',
+                      ? `0 0 30px ${color}, 0 0 60px ${color}`
+                      : `0 0 15px rgba(0,255,136,0.4)`,
                     fontWeight: word.category === 'core' ? 'bold' : 'normal',
+                    zIndex: Math.round(word.z),
                   }}
                   onMouseEnter={() => setHoveredWord(word.text)}
                   onMouseLeave={() => setHoveredWord(null)}
@@ -129,36 +153,18 @@ export default function UseCases() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="flex flex-wrap gap-4 justify-center mt-12"
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="flex flex-wrap gap-4 justify-center mt-8"
         >
           {Object.entries(categoryColors).map(([category, color]) => (
             <div key={category} className="flex items-center gap-2">
               <div
                 className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: color }}
+                style={{ backgroundColor: color, boxShadow: `0 0 10px ${color}` }}
               />
               <span className="text-sm text-gray-500 capitalize">{category}</span>
             </div>
           ))}
-        </motion.div>
-
-        {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="text-center mt-16"
-        >
-          <p className="text-gray-400 mb-6">And many more...</p>
-          <a
-            href="https://docs.bitmind.ai"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-bitmind-accent hover:underline font-semibold"
-          >
-            Explore All Use Cases →
-          </a>
         </motion.div>
       </div>
     </section>

@@ -12,66 +12,66 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
         >
-          {/* Hook - grab attention in 3 seconds */}
+          {/* Hook - REAL VERIFIED NUMBER */}
           <motion.h1
-            className="text-6xl md:text-8xl font-bold mb-6 leading-tight"
-            initial={{ opacity: 0, scale: 0.95 }}
+            className="text-7xl md:text-9xl font-bold mb-6 leading-none"
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <span className="gradient-text">$200M stolen</span>
-            <br />
-            <span className="text-white">in 90 days.</span>
+            <span className="gradient-text">$410M</span>
           </motion.h1>
 
           <motion.p
-            className="text-2xl md:text-3xl text-gray-400 mb-12 max-w-3xl mx-auto"
+            className="text-3xl md:text-4xl font-bold text-white mb-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
-            Deepfakes are everywhere.
-            <br />
-            <span className="text-white font-semibold">Detect them instantly.</span>
+            stolen in 6 months.
+          </motion.p>
+
+          <motion.p
+            className="text-xl md:text-2xl text-gray-400 mb-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            Deepfakes are everywhere. <span className="text-bitmind-accent font-semibold">Stop them.</span>
           </motion.p>
 
           <motion.div
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
           >
             <a
-              href="#demo"
-              className="px-8 py-4 bg-bitmind-accent text-black font-bold rounded-lg text-lg hover:glow transition-all duration-300 transform hover:scale-105"
+              href="#game"
+              className="px-10 py-5 bg-bitmind-accent text-black font-bold rounded-lg text-xl hover:glow transition-all duration-300 transform hover:scale-105"
             >
-              Try Live Demo
+              Spot the Fake
             </a>
             <a
-              href="#pricing"
-              className="px-8 py-4 border-2 border-white/20 text-white font-semibold rounded-lg text-lg hover:border-bitmind-accent hover:text-bitmind-accent transition-all duration-300"
+              href="#demo"
+              className="px-10 py-5 border-2 border-white/20 text-white font-semibold rounded-lg text-xl hover:border-bitmind-accent hover:text-bitmind-accent transition-all duration-300"
             >
-              View Pricing
+              Try API
             </a>
           </motion.div>
 
-          {/* Social proof */}
+          {/* Trust badges */}
           <motion.div
-            className="mt-16 text-gray-500 text-sm"
+            className="mt-16 flex gap-6 justify-center items-center flex-wrap text-sm text-gray-600"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
           >
-            <p className="mb-4">TRUSTED BY LEADING PLATFORMS</p>
-            <div className="flex gap-8 justify-center items-center flex-wrap opacity-50">
-              <span className="text-lg">88% Accuracy</span>
-              <span className="text-lg">•</span>
-              <span className="text-lg">GDPR Compliant</span>
-              <span className="text-lg">•</span>
-              <span className="text-lg">Zero Data Retention</span>
-            </div>
+            <span className="px-4 py-2 border border-white/10 rounded-full">88% Accuracy</span>
+            <span className="px-4 py-2 border border-white/10 rounded-full">Real-time</span>
+            <span className="px-4 py-2 border border-white/10 rounded-full">Zero Retention</span>
           </motion.div>
         </motion.div>
       </div>
