@@ -31,41 +31,41 @@ export default function DiamondSpinner() {
     return () => cancelAnimationFrame(rafId);
   }, [isInView]);
 
-  // Premium use cases with better 3D distribution
+  // Use cases positioned in clean 3D sphere layout
   const words = useMemo(() => [
-    // Core center - hero use case
-    { text: 'Deepfake Detection', size: 38, x: 0, y: 0, z: 80, category: 'core' },
+    // Core center
+    { text: 'Deepfake Detection', size: 32, x: 0, y: 0, z: 40, category: 'core' },
 
-    // Inner sphere - critical use cases
-    { text: 'KYC Verification', size: 24, x: -180, y: -90, z: 100, category: 'finance' },
-    { text: 'Content Moderation', size: 24, x: 180, y: -90, z: 100, category: 'social' },
-    { text: 'Identity Verification', size: 23, x: 0, y: -170, z: 90, category: 'finance' },
-    { text: 'Fraud Prevention', size: 25, x: 0, y: 140, z: 110, category: 'finance' },
-    { text: 'Profile Verification', size: 22, x: 160, y: 110, z: 85, category: 'social' },
-    { text: 'Video Verification', size: 24, x: -190, y: 50, z: 70, category: 'tech' },
+    // Inner ring
+    { text: 'KYC Verification', size: 22, x: -140, y: -70, z: 50, category: 'finance' },
+    { text: 'Content Moderation', size: 22, x: 140, y: -70, z: 50, category: 'social' },
+    { text: 'Fraud Prevention', size: 22, x: 0, y: -130, z: 45, category: 'finance' },
+    { text: 'Identity Verification', size: 21, x: 0, y: 110, z: 45, category: 'finance' },
+    { text: 'Profile Verification', size: 20, x: -120, y: 90, z: 40, category: 'social' },
+    { text: 'Video Verification', size: 20, x: 120, y: 90, z: 40, category: 'tech' },
 
-    // Middle sphere - important use cases
-    { text: 'Image Analysis', size: 23, x: 220, y: 50, z: 20, category: 'tech' },
-    { text: 'Real-time Detection', size: 21, x: -200, y: -160, z: 30, category: 'tech' },
-    { text: 'Trust & Safety', size: 21, x: 200, y: -160, z: 20, category: 'social' },
-    { text: 'Media Authentication', size: 20, x: 0, y: 200, z: 40, category: 'media' },
-    { text: 'Insurance Claims', size: 20, x: 240, y: -110, z: 10, category: 'finance' },
-    { text: 'Dating App Safety', size: 20, x: -210, y: 150, z: 25, category: 'social' },
-    { text: 'Customer Onboarding', size: 20, x: 210, y: 150, z: 15, category: 'enterprise' },
-    { text: 'Account Takeover Prevention', size: 19, x: -150, y: 120, z: 50, category: 'finance' },
+    // Middle ring
+    { text: 'Image Analysis', size: 21, x: 180, y: 0, z: 0, category: 'tech' },
+    { text: 'Trust & Safety', size: 20, x: -180, y: 0, z: 0, category: 'social' },
+    { text: 'Real-time Detection', size: 19, x: -160, y: -120, z: 5, category: 'tech' },
+    { text: 'Media Authentication', size: 19, x: 160, y: -120, z: 5, category: 'media' },
+    { text: 'Insurance Claims', size: 19, x: -160, y: 120, z: 5, category: 'finance' },
+    { text: 'Dating App Safety', size: 19, x: 160, y: 120, z: 5, category: 'social' },
+    { text: 'Customer Onboarding', size: 18, x: 0, y: 170, z: 0, category: 'enterprise' },
+    { text: 'Account Takeover', size: 18, x: 0, y: -170, z: 0, category: 'finance' },
 
-    // Outer sphere - extended use cases
-    { text: 'CEO Fraud Defense', size: 19, x: -280, y: -50, z: -40, category: 'finance' },
-    { text: 'Compliance', size: 20, x: 280, y: -50, z: -50, category: 'enterprise' },
-    { text: 'Wire Transfer Protection', size: 18, x: -260, y: 130, z: -60, category: 'finance' },
-    { text: 'UGC Verification', size: 19, x: 260, y: 130, z: -45, category: 'social' },
-    { text: 'Source Verification', size: 19, x: 0, y: -240, z: -55, category: 'media' },
-    { text: 'API Integration', size: 18, x: 0, y: 240, z: -65, category: 'tech' },
-    { text: 'Marketplace Trust', size: 18, x: -290, y: -170, z: -70, category: 'social' },
-    { text: 'Legal Tech', size: 19, x: 290, y: -170, z: -60, category: 'enterprise' },
-    { text: 'News Verification', size: 18, x: -270, y: 200, z: -75, category: 'media' },
-    { text: 'Healthcare ID', size: 18, x: 270, y: 200, z: -70, category: 'enterprise' },
-    { text: 'Digital Evidence', size: 17, x: -230, y: -120, z: -35, category: 'media' },
+    // Outer ring
+    { text: 'CEO Fraud Defense', size: 18, x: -220, y: -40, z: -50, category: 'finance' },
+    { text: 'Compliance', size: 18, x: 220, y: -40, z: -50, category: 'enterprise' },
+    { text: 'Wire Transfer Protection', size: 17, x: -200, y: 100, z: -55, category: 'finance' },
+    { text: 'UGC Verification', size: 17, x: 200, y: 100, z: -55, category: 'social' },
+    { text: 'Source Verification', size: 17, x: 0, y: -200, z: -60, category: 'media' },
+    { text: 'API Integration', size: 17, x: 0, y: 200, z: -60, category: 'tech' },
+    { text: 'Marketplace Trust', size: 17, x: -230, y: -140, z: -65, category: 'social' },
+    { text: 'Legal Tech', size: 17, x: 230, y: -140, z: -65, category: 'enterprise' },
+    { text: 'News Verification', size: 17, x: -230, y: 160, z: -65, category: 'media' },
+    { text: 'Healthcare ID', size: 17, x: 230, y: 160, z: -65, category: 'enterprise' },
+    { text: 'Digital Evidence', size: 17, x: -190, y: -100, z: -30, category: 'media' },
   ], []);
 
   const categoryColors = {
@@ -94,75 +94,53 @@ export default function DiamondSpinner() {
   );
 
   return (
-    <section ref={ref} className="min-h-screen flex items-center justify-center px-6 py-24 bg-black relative overflow-hidden">
-      {/* Subtle background grid */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
-        backgroundImage: 'radial-gradient(circle at center, rgba(0, 255, 136, 0.1) 1px, transparent 1px)',
-        backgroundSize: '50px 50px',
-      }} />
-
+    <section ref={ref} className="min-h-screen flex items-center justify-center px-6 py-20 bg-black relative overflow-hidden">
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Enhanced Header */}
+        {/* Clean Header */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-          className="text-center mb-24"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="inline-block mb-6"
-          >
-            <div className="px-6 py-2 rounded-full border border-bitmind-accent/30 bg-bitmind-accent/5 backdrop-blur-sm">
-              <span className="text-sm font-medium text-bitmind-accent tracking-wide">VERSATILE INTEGRATION</span>
-            </div>
-          </motion.div>
-
-          <h2 className="text-6xl md:text-8xl font-bold mb-6 tracking-tight leading-tight">
-            One API,<br />
-            <span className="gradient-text">Infinite Use Cases</span>
+          <h2 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
+            One API, <span className="gradient-text">Infinite Use Cases</span>
           </h2>
 
-          <div className="h-[36px] w-full max-w-4xl mx-auto flex items-center justify-center">
-            <motion.p
-              className="text-2xl absolute"
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
+          <div className="h-[32px] w-full max-w-3xl mx-auto flex items-center justify-center">
+            <motion.p className="text-xl absolute">
               {hoveredWord ? (
-                <span className="gradient-text font-bold tracking-wide">
+                <span className="gradient-text font-semibold">
                   {hoveredWord}
                 </span>
               ) : (
-                <span className="text-white/50 font-light">
-                  Explore our solutions
+                <span className="text-white/60">
+                  Hover to explore
                 </span>
               )}
             </motion.p>
           </div>
         </motion.div>
 
-        {/* Premium 3D Sphere Visualization */}
+        {/* Clean 3D Sphere */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          className="relative h-[800px] flex items-center justify-center"
-          style={{ perspective: '1600px' }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="relative h-[700px] flex items-center justify-center"
+          style={{ perspective: '1400px' }}
         >
-          {/* Layered particle effects */}
+          {/* Background effects */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            {/* Volumetric ambient particles */}
-            <div className="absolute w-[700px] h-[700px]">
+            {/* Ambient particle cloud */}
+            <div className="absolute w-[600px] h-[600px]">
               {ambientParticles.map((particle, i) => (
                 <motion.div
                   key={`ambient-${i}`}
                   initial={{ opacity: 0, scale: 0 }}
                   animate={isInView ? {
-                    opacity: [particle.opacity, particle.opacity * 1.6, particle.opacity],
-                    scale: [1, 1.3, 1],
+                    opacity: [particle.opacity * 0.6, particle.opacity, particle.opacity * 0.6],
+                    scale: [1, 1.2, 1],
                   } : {}}
                   transition={{
                     duration: particle.duration,
@@ -170,68 +148,67 @@ export default function DiamondSpinner() {
                     delay: particle.delay,
                     ease: "easeInOut"
                   }}
-                  className="absolute rounded-full"
+                  className="absolute rounded-full bg-bitmind-accent"
                   style={{
                     left: '50%',
                     top: '50%',
                     width: `${particle.size}px`,
                     height: `${particle.size}px`,
                     transform: `translate(${particle.x}px, ${particle.y}px)`,
-                    background: `radial-gradient(circle, rgba(0, 255, 136, 0.8) 0%, rgba(0, 212, 255, 0.4) 100%)`,
-                    boxShadow: `0 0 ${particle.size * 6}px rgba(0, 255, 136, ${particle.opacity * 0.8})`,
+                    boxShadow: `0 0 ${particle.size * 4}px rgba(0, 255, 136, ${particle.opacity * 0.5})`,
                   }}
                 />
               ))}
             </div>
 
-            {/* Rotating 3D wireframe sphere */}
+            {/* Rotating wireframe sphere */}
             <motion.div
-              className="absolute w-[600px] h-[600px]"
+              className="absolute w-[550px] h-[550px]"
               style={{
                 transformStyle: 'preserve-3d',
-                transform: `rotateY(${sphereRotation}deg) rotateX(20deg)`,
+                transform: `rotateY(${sphereRotation}deg) rotateX(15deg)`,
               }}
             >
-              {/* Main sphere particles */}
-              {Array.from({ length: 120 }).map((_, i) => {
-                const phi = Math.acos(-1 + (2 * i) / 120);
-                const theta = Math.sqrt(120 * Math.PI) * phi;
-                const radius = 300;
+              {/* Sphere particles */}
+              {Array.from({ length: 100 }).map((_, i) => {
+                const phi = Math.acos(-1 + (2 * i) / 100);
+                const theta = Math.sqrt(100 * Math.PI) * phi;
+                const radius = 275;
                 const x = radius * Math.cos(theta) * Math.sin(phi);
                 const y = radius * Math.sin(theta) * Math.sin(phi);
                 const z = radius * Math.cos(phi);
-                const zOpacity = 0.25 + (z / radius) * 0.35;
+                const zOpacity = 0.2 + (z / radius) * 0.3;
 
                 return (
                   <motion.div
                     key={`sphere-${i}`}
                     initial={{ opacity: 0, scale: 0 }}
                     animate={isInView ? { opacity: zOpacity, scale: 1 } : {}}
-                    transition={{ duration: 1.5, delay: i * 0.006 }}
-                    className="absolute w-2 h-2 rounded-full bg-bitmind-accent"
+                    transition={{ duration: 1.2, delay: i * 0.006 }}
+                    className="absolute w-1.5 h-1.5 rounded-full bg-bitmind-accent"
                     style={{
                       left: '50%',
                       top: '50%',
                       transform: `translate3d(${x}px, ${y}px, ${z}px)`,
-                      boxShadow: `0 0 ${8 + zOpacity * 12}px rgba(0, 255, 136, ${zOpacity})`,
+                      boxShadow: `0 0 ${6 + zOpacity * 8}px rgba(0, 255, 136, ${zOpacity * 0.8})`,
                     }}
                   />
                 );
               })}
 
-              {/* Elegant orbital rings */}
-              {[0, 45, 90].map((angle) => (
+              {/* Orbital rings */}
+              {[0, 60, 120].map((angle) => (
                 <motion.div
                   key={`ring-${angle}`}
                   className="absolute inset-0"
                   style={{
                     transformStyle: 'preserve-3d',
-                    transform: `rotateZ(${angle}deg) rotateX(15deg)`,
+                    transform: `rotateZ(${angle}deg)`,
                   }}
                 >
-                  {Array.from({ length: 50 }).map((_, i) => {
-                    const a = (i / 50) * Math.PI * 2;
-                    const r = 300;
+                  {Array.from({ length: 40 }).map((_, i) => {
+                    const a = (i / 40) * Math.PI * 2;
+                    const r = 275;
                     const x = r * Math.cos(a);
                     const y = r * Math.sin(a);
 
@@ -239,14 +216,14 @@ export default function DiamondSpinner() {
                       <motion.div
                         key={i}
                         initial={{ opacity: 0 }}
-                        animate={isInView ? { opacity: 0.2 } : {}}
-                        transition={{ duration: 1.2, delay: i * 0.008 }}
-                        className="absolute w-1 h-1 rounded-full bg-cyan-400"
+                        animate={isInView ? { opacity: 0.15 } : {}}
+                        transition={{ duration: 1, delay: i * 0.01 }}
+                        className="absolute w-0.5 h-0.5 rounded-full bg-cyan-400"
                         style={{
                           left: '50%',
                           top: '50%',
                           transform: `translate3d(${x}px, ${y}px, 0px)`,
-                          boxShadow: '0 0 6px rgba(0, 212, 255, 0.5)',
+                          boxShadow: '0 0 4px rgba(0, 212, 255, 0.4)',
                         }}
                       />
                     );
@@ -255,18 +232,14 @@ export default function DiamondSpinner() {
               ))}
             </motion.div>
 
-            {/* Subtle center energy core */}
+            {/* Center glow */}
             <motion.div
               animate={{
-                scale: [1, 1.12, 1],
-                opacity: [0.08, 0.15, 0.08],
+                scale: [1, 1.08, 1],
+                opacity: [0.12, 0.2, 0.12],
               }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              className="w-[400px] h-[400px] rounded-full"
-              style={{
-                background: 'radial-gradient(circle, rgba(0, 255, 136, 0.2) 0%, transparent 70%)',
-                filter: 'blur(40px)',
-              }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              className="w-[400px] h-[400px] bg-gradient-to-r from-bitmind-accent/30 to-cyan-500/30 rounded-full blur-3xl"
             />
           </div>
 
@@ -277,46 +250,46 @@ export default function DiamondSpinner() {
           >
             {words.map((word, i) => {
               const color = categoryColors[word.category as keyof typeof categoryColors];
-              const depthScale = 1 + word.z / 400;
+              const depthScale = 1 + word.z / 350;
               const isHovered = hoveredWord === word.text;
               const isFaded = hoveredWord && !isHovered;
 
               return (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, scale: 0.4 }}
+                  initial={{ opacity: 0, scale: 0.5 }}
                   animate={{
-                    opacity: isFaded ? 0.12 : (0.85 + word.z / 300),
-                    scale: isHovered ? depthScale * 1.12 : depthScale,
+                    opacity: isFaded ? 0.15 : (0.8 + word.z / 280),
+                    scale: isHovered ? depthScale * 1.1 : depthScale,
                   }}
                   transition={{
-                    duration: 0.9,
+                    duration: 0.8,
                     delay: isInView ? i * 0.04 : 0,
-                    opacity: { duration: 0.25 },
-                    scale: { duration: 0.3, ease: "easeOut" }
+                    opacity: { duration: 0.3 },
+                    scale: { duration: 0.25, ease: "easeOut" }
                   }}
-                  className="absolute cursor-pointer whitespace-nowrap select-none group"
+                  className="absolute cursor-pointer whitespace-nowrap select-none"
                   style={{
                     left: `calc(50% + ${word.x}px)`,
                     top: `calc(50% + ${word.y}px)`,
                     transform: `translateZ(${word.z}px) translate(-50%, -50%)`,
                     fontSize: `${word.size * depthScale}px`,
-                    color: isHovered ? color : word.category === 'core' ? '#ffffff' : '#f0f0f0',
+                    color: isHovered ? color : word.category === 'core' ? '#ffffff' : '#e8e8e8',
                     textShadow: isHovered
-                      ? `0 0 60px ${color}, 0 0 100px ${color}bb, 0 6px 30px ${color}77`
+                      ? `0 0 50px ${color}, 0 0 90px ${color}aa, 0 4px 25px ${color}66`
                       : word.category === 'core'
-                      ? `0 0 30px rgba(0,255,136,0.5), 0 0 60px rgba(0,255,136,0.2)`
-                      : `0 0 20px rgba(255,255,255,0.2)`,
-                    fontWeight: word.category === 'core' ? '800' : '600',
-                    zIndex: isHovered ? 1000 : Math.round(word.z + 200),
-                    letterSpacing: word.category === 'core' ? '0.04em' : '0.02em',
+                      ? `0 0 25px rgba(0,255,136,0.4), 0 0 50px rgba(0,255,136,0.15)`
+                      : `0 0 15px rgba(255,255,255,0.15)`,
+                    fontWeight: word.category === 'core' ? '700' : '500',
+                    zIndex: isHovered ? 1000 : Math.round(word.z + 150),
+                    letterSpacing: word.category === 'core' ? '0.03em' : '0.01em',
                     filter: isHovered
-                      ? 'blur(0px) brightness(1.2)'
+                      ? 'blur(0px) brightness(1.15)'
                       : word.z < 0
-                      ? `blur(${Math.abs(word.z) / 100}px) brightness(0.85)`
+                      ? `blur(${Math.abs(word.z) / 120}px) brightness(0.9)`
                       : 'blur(0px)',
-                    transition: 'color 0.25s ease-out, text-shadow 0.25s ease-out, filter 0.25s ease-out',
-                    padding: '8px 12px',
+                    transition: 'color 0.2s ease-out, text-shadow 0.2s ease-out, filter 0.2s ease-out',
+                    padding: '6px 10px',
                     pointerEvents: 'auto',
                   }}
                   onMouseEnter={() => setHoveredWord(word.text)}
@@ -324,16 +297,16 @@ export default function DiamondSpinner() {
                 >
                   {word.text}
 
-                  {/* Enhanced hover underline */}
+                  {/* Hover underline */}
                   {isHovered && (
                     <motion.div
-                      initial={{ scaleX: 0, opacity: 0 }}
-                      animate={{ scaleX: 1, opacity: 1 }}
-                      transition={{ duration: 0.3, ease: "easeOut" }}
-                      className="absolute -bottom-1 left-3 right-3 h-0.5 rounded-full"
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 0.25, ease: "easeOut" }}
+                      className="absolute -bottom-1 left-2 right-2 h-px rounded-full"
                       style={{
                         background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
-                        boxShadow: `0 0 16px ${color}, 0 2px 8px ${color}88`,
+                        boxShadow: `0 0 12px ${color}`,
                       }}
                     />
                   )}
@@ -343,35 +316,32 @@ export default function DiamondSpinner() {
           </motion.div>
         </motion.div>
 
-        {/* Refined Category Legend */}
+        {/* Category Legend */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="flex flex-wrap gap-4 justify-center mt-16"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="flex flex-wrap gap-3 justify-center mt-12"
         >
           {Object.entries(categoryColors).map(([category, color]) => (
             <motion.div
               key={category}
-              whileHover={{ scale: 1.08, y: -2 }}
-              transition={{ duration: 0.2 }}
-              className="flex items-center gap-3 px-5 py-3 rounded-full cursor-default"
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full cursor-default"
               style={{
-                backdropFilter: 'blur(16px)',
-                background: 'rgba(0,0,0,0.4)',
-                border: '1px solid rgba(255,255,255,0.12)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                backdropFilter: 'blur(12px)',
+                background: 'rgba(0,0,0,0.3)',
+                border: '1px solid rgba(255,255,255,0.1)',
               }}
             >
-              <motion.div
-                animate={{
-                  boxShadow: [`0 0 8px ${color}`, `0 0 16px ${color}`, `0 0 8px ${color}`],
+              <div
+                className="w-2.5 h-2.5 rounded-full"
+                style={{
+                  backgroundColor: color,
+                  boxShadow: `0 0 8px ${color}`
                 }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: color }}
               />
-              <span className="text-sm text-white/70 capitalize font-semibold tracking-wider">
+              <span className="text-xs text-white/60 capitalize font-medium tracking-wide">
                 {category}
               </span>
             </motion.div>
