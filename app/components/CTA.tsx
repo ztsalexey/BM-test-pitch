@@ -43,7 +43,7 @@ export default function CTA() {
             Explore all BitMind resources and get started.
           </p>
 
-          {/* Resource Grid */}
+          {/* Resource Grid - Premium glass cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {resources.map((resource, i) => (
               <motion.a
@@ -54,13 +54,13 @@ export default function CTA() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: i * 0.05 }}
-                className="bg-bitmind-gray border border-white/10 rounded-2xl p-6 hover:border-bitmind-accent/50 transition-all duration-300 hover:glow group"
+                className="glass rounded-2xl p-6 hover-glow card-hover group"
               >
                 <div className="text-4xl mb-3 transform group-hover:scale-110 transition-transform duration-300">
                   {resource.icon}
                 </div>
-                <h3 className="text-lg font-bold mb-1">{resource.name}</h3>
-                <p className="text-sm text-gray-500">{resource.desc}</p>
+                <h3 className="text-lg font-bold mb-1 text-white/90">{resource.name}</h3>
+                <p className="text-sm text-white/40">{resource.desc}</p>
               </motion.a>
             ))}
           </div>
@@ -71,10 +71,10 @@ export default function CTA() {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="mt-20 text-gray-600 text-sm border-t border-white/10 pt-12"
+          className="mt-20 text-white/30 text-sm border-t border-white/10 pt-12"
         >
-          <p className="text-lg mb-2">© 2025 BitMind. Building the future of trustworthy AI.</p>
-          <p className="text-gray-500">Powered by Bittensor Subnet 34 • EU Hosted • Zero Data Retention</p>
+          <p className="text-lg mb-2 text-white/50">© 2025 BitMind. Building the future of trustworthy AI.</p>
+          <p className="text-white/30">Powered by Bittensor Subnet 34 • EU Hosted • Zero Data Retention</p>
         </motion.div>
       </div>
     </section>

@@ -47,19 +47,19 @@ export default function LiveDemo() {
     <section
       id="demo"
       ref={ref}
-      className="min-h-screen flex items-center justify-center px-6 py-20 bg-bitmind-gray"
+      className="min-h-screen flex items-center justify-center px-6 py-20 relative overflow-hidden"
     >
-      <div className="max-w-4xl mx-auto w-full">
+      <div className="max-w-4xl mx-auto w-full relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h2 className="text-5xl md:text-6xl font-bold mb-6">
+          <h2 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
             Try It <span className="gradient-text">Live</span>
           </h2>
-          <p className="text-xl text-gray-400">
+          <p className="text-xl text-white/60">
             Upload an image or video and see our detection in action.
           </p>
         </motion.div>
@@ -68,13 +68,13 @@ export default function LiveDemo() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="bg-bitmind-dark border border-white/10 rounded-3xl p-8 md:p-12"
+          className="glass rounded-3xl p-8 md:p-12"
         >
-          {/* Upload Area */}
+          {/* Upload Area - Premium glass */}
           <div
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
-            className="border-2 border-dashed border-white/20 rounded-2xl p-12 text-center hover:border-bitmind-accent/50 transition-all duration-300 cursor-pointer"
+            className="border-2 border-dashed border-white/20 rounded-2xl p-12 text-center hover:border-bitmind-accent/50 transition-all duration-300 cursor-pointer hover-glow scan-effect"
           >
             <input
               id="file-input"
@@ -85,8 +85,8 @@ export default function LiveDemo() {
             />
             <label htmlFor="file-input" className="cursor-pointer">
               <div className="text-6xl mb-4">📤</div>
-              <p className="text-xl font-semibold mb-2">Drop a file or click to upload</p>
-              <p className="text-gray-500">Supports images and videos</p>
+              <p className="text-xl font-semibold mb-2 text-white/90">Drop a file or click to upload</p>
+              <p className="text-white/40">Supports images and videos</p>
             </label>
           </div>
 
@@ -98,11 +98,11 @@ export default function LiveDemo() {
               className="mt-8 text-center"
             >
               <div className="inline-block w-16 h-16 border-4 border-bitmind-accent/30 border-t-bitmind-accent rounded-full animate-spin mb-4" />
-              <p className="text-lg text-gray-400">Analyzing with AI models...</p>
+              <p className="text-lg text-white/50">Analyzing with AI models...</p>
             </motion.div>
           )}
 
-          {/* Results */}
+          {/* Results - Premium cards */}
           {result && !isAnalyzing && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -110,16 +110,16 @@ export default function LiveDemo() {
               transition={{ duration: 0.5 }}
               className="mt-8"
             >
-              <div className="bg-bitmind-gray rounded-2xl p-8 border-2 border-bitmind-accent/50">
+              <div className="glass rounded-2xl p-8 border-2 border-bitmind-accent/50">
                 <div className="text-center mb-6">
                   <div className="text-7xl font-bold gradient-text mb-2">
                     {(result.score * 100).toFixed(1)}%
                   </div>
-                  <p className="text-xl text-gray-400">Confidence Score</p>
+                  <p className="text-xl text-white/60">Confidence Score</p>
                 </div>
                 <div className="flex items-center justify-center gap-4">
                   <div
-                    className={`px-6 py-3 rounded-full font-bold text-lg ${
+                    className={`px-6 py-3 rounded-full font-bold text-lg backdrop-blur-xl ${
                       result.isAI
                         ? 'bg-red-500/20 text-red-400 border-2 border-red-500'
                         : 'bg-green-500/20 text-green-400 border-2 border-green-500'
@@ -133,7 +133,7 @@ export default function LiveDemo() {
                     setSelectedFile(null);
                     setResult(null);
                   }}
-                  className="mt-6 w-full py-3 border border-white/20 rounded-lg hover:border-bitmind-accent hover:text-bitmind-accent transition-all duration-300"
+                  className="mt-6 w-full py-3 glass rounded-lg hover-glow transition-all duration-300"
                 >
                   Try Another File
                 </button>
@@ -141,19 +141,19 @@ export default function LiveDemo() {
             </motion.div>
           )}
 
-          {/* API Code Example */}
+          {/* API Code Example - Clean */}
           {!selectedFile && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="mt-8 bg-black/50 rounded-xl p-6 border border-white/5"
+              className="mt-8 glass rounded-xl p-6"
             >
-              <p className="text-sm text-gray-500 mb-3">Or integrate via API:</p>
+              <p className="text-sm text-white/40 mb-3">Or integrate via API:</p>
               <code className="text-sm text-bitmind-accent block overflow-x-auto">
-                <span className="text-gray-500">curl</span> -X POST https://enterprise.bitmind.ai/image \<br />
-                <span className="ml-4 text-gray-500">-H</span> "Authorization: Bearer YOUR_API_KEY" \<br />
-                <span className="ml-4 text-gray-500">--data-binary</span> "@image.jpg"
+                <span className="text-white/50">curl</span> -X POST https://enterprise.bitmind.ai/image \<br />
+                <span className="ml-4 text-white/50">-H</span> "Authorization: Bearer YOUR_API_KEY" \<br />
+                <span className="ml-4 text-white/50">--data-binary</span> "@image.jpg"
               </code>
             </motion.div>
           )}

@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 * {
   margin: 0;
@@ -11,13 +11,16 @@
 }
 
 body {
-  background: #0A0A0A;
+  background: #000000;
   color: white;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer utilities {
+  /* Premium gradient text */
   .gradient-text {
     background: linear-gradient(135deg, #00FF88 0%, #00D4FF 100%);
     -webkit-background-clip: text;
@@ -25,202 +28,204 @@ body {
     background-clip: text;
   }
 
+  /* Subtle glow for premium feel */
   .glow {
-    box-shadow: 0 0 40px rgba(0, 255, 136, 0.3);
+    box-shadow: 0 0 60px rgba(0, 255, 136, 0.2);
   }
 
-  /* Glitch effect */
-  .glitch {
-    position: relative;
-    animation: glitch 2s infinite;
+  /* Glassmorphism card */
+  .glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  @keyframes glitch {
-    0%, 100% {
-      transform: translate(0);
-    }
-    20% {
-      transform: translate(-2px, 2px);
-    }
-    40% {
-      transform: translate(-2px, -2px);
-    }
-    60% {
-      transform: translate(2px, 2px);
-    }
-    80% {
-      transform: translate(2px, -2px);
-    }
+  /* Premium hover glow */
+  .hover-glow {
+    transition: all 0.3s ease;
   }
 
-  /* Pixel corruption effect */
-  .pixel-corrupt {
-    background-image:
-      repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0, 255, 136, 0.03) 2px,
-        rgba(0, 255, 136, 0.03) 4px
-      ),
-      repeating-linear-gradient(
-        90deg,
-        transparent,
-        transparent 2px,
-        rgba(0, 255, 136, 0.03) 2px,
-        rgba(0, 255, 136, 0.03) 4px
-      );
-    animation: pixel-drift 8s infinite linear;
+  .hover-glow:hover {
+    box-shadow:
+      0 0 40px rgba(0, 255, 136, 0.15),
+      0 0 80px rgba(0, 255, 136, 0.1),
+      inset 0 0 20px rgba(0, 255, 136, 0.05);
   }
 
-  @keyframes pixel-drift {
-    0% {
-      background-position: 0 0, 0 0;
-    }
-    100% {
-      background-position: 100px 100px, -100px -100px;
-    }
-  }
-
-  /* RGB split effect */
-  .rgb-split {
-    position: relative;
-  }
-
-  .rgb-split::before,
-  .rgb-split::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.8;
-  }
-
-  .rgb-split::before {
-    color: #00FF88;
-    animation: rgb-split-1 3s infinite;
-  }
-
-  .rgb-split::after {
-    color: #FF006E;
-    animation: rgb-split-2 3s infinite;
-  }
-
-  @keyframes rgb-split-1 {
-    0%, 100% {
-      transform: translate(0);
-      opacity: 0;
-    }
-    33% {
-      transform: translate(-2px, 0);
-      opacity: 0.8;
-    }
-  }
-
-  @keyframes rgb-split-2 {
-    0%, 100% {
-      transform: translate(0);
-      opacity: 0;
-    }
-    66% {
-      transform: translate(2px, 0);
-      opacity: 0.8;
-    }
-  }
-
-  /* Scan line effect */
-  .scanline {
+  /* Detection scan animation - SIGNATURE EFFECT */
+  .scan-effect {
     position: relative;
     overflow: hidden;
   }
 
-  .scanline::before {
+  .scan-effect::before {
     content: '';
     position: absolute;
-    top: 0;
+    top: -100%;
     left: 0;
     width: 100%;
     height: 100%;
     background: linear-gradient(
       to bottom,
       transparent 0%,
-      rgba(0, 255, 136, 0.1) 50%,
+      rgba(0, 255, 136, 0.3) 50%,
       transparent 100%
     );
-    animation: scanline 6s infinite linear;
-    pointer-events: none;
+    animation: scan 2s ease-in-out infinite;
   }
 
-  @keyframes scanline {
+  @keyframes scan {
     0% {
-      transform: translateY(-100%);
-    }
-    100% {
-      transform: translateY(100%);
-    }
-  }
-
-  /* Deepfake distortion */
-  .deepfake-distort {
-    animation: deepfake-distort 4s infinite;
-  }
-
-  @keyframes deepfake-distort {
-    0%, 100% {
-      filter: none;
-    }
-    25% {
-      filter: hue-rotate(5deg) saturate(1.2);
+      top: -100%;
     }
     50% {
-      filter: hue-rotate(-5deg) saturate(0.8);
+      top: 100%;
     }
-    75% {
-      filter: hue-rotate(3deg) saturate(1.1);
+    100% {
+      top: 100%;
     }
   }
 
-  /* Cyber grid background */
-  .cyber-grid {
+  /* Smooth fade in */
+  .fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Subtle grid background */
+  .premium-grid {
     background-image:
-      linear-gradient(rgba(0, 255, 136, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 255, 136, 0.05) 1px, transparent 1px);
-    background-size: 30px 30px;
-    background-position: 0 0, 0 0;
-    animation: cyber-grid 20s linear infinite;
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 50px 50px;
   }
 
-  @keyframes cyber-grid {
-    0% {
-      background-position: 0 0, 0 0;
-    }
-    100% {
-      background-position: 30px 30px, -30px -30px;
-    }
+  /* Deepfake glitch - ONLY for showing fakes */
+  .fake-glitch {
+    position: relative;
   }
 
-  /* Holographic effect */
-  .holographic {
+  .fake-glitch::after {
+    content: '';
+    position: absolute;
+    inset: 0;
     background: linear-gradient(
-      45deg,
-      #00FF88 0%,
-      #00D4FF 25%,
-      #FF006E 50%,
-      #00D4FF 75%,
-      #00FF88 100%
+      90deg,
+      transparent,
+      rgba(255, 0, 110, 0.1),
+      transparent
     );
-    background-size: 400% 400%;
-    animation: holographic 8s ease infinite;
+    opacity: 0;
+    transition: opacity 0.3s;
   }
 
-  @keyframes holographic {
+  .fake-glitch:hover::after {
+    opacity: 1;
+    animation: glitch-scan 0.5s ease-in-out;
+  }
+
+  @keyframes glitch-scan {
     0%, 100% {
-      background-position: 0% 50%;
+      transform: translateX(-100%);
     }
     50% {
-      background-position: 100% 50%;
+      transform: translateX(100%);
+    }
+  }
+
+  /* Smooth shimmer for CTAs */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s;
+  }
+
+  .shimmer:hover::before {
+    left: 100%;
+  }
+
+  /* Number counter effect */
+  .number-glow {
+    text-shadow:
+      0 0 20px rgba(0, 255, 136, 0.5),
+      0 0 40px rgba(0, 255, 136, 0.3),
+      0 0 60px rgba(0, 255, 136, 0.2);
+  }
+
+  /* Premium card hover */
+  .card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 20px 40px rgba(0, 0, 0, 0.4),
+      0 0 40px rgba(0, 255, 136, 0.1);
+  }
+
+  /* Subtle pulse for important elements */
+  .pulse-subtle {
+    animation: pulse-subtle 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-subtle {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  /* Premium border gradient */
+  .border-gradient {
+    position: relative;
+    border: 1px solid transparent;
+    background:
+      linear-gradient(#000, #000) padding-box,
+      linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 212, 255, 0.2)) border-box;
+  }
+
+  /* Smooth reveal animation */
+  .reveal {
+    animation: reveal 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
     }
   }
 }

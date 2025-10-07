@@ -79,10 +79,10 @@ export default function UseCases() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-5xl md:text-7xl font-bold mb-6">
+          <h2 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
             One API, <span className="gradient-text">Infinite Use Cases</span>
           </h2>
-          <p className="text-xl text-gray-400">
+          <p className="text-xl text-white/60">
             Hover to explore
           </p>
         </motion.div>
@@ -149,7 +149,7 @@ export default function UseCases() {
           </div>
         </motion.div>
 
-        {/* Category Legend */}
+        {/* Category Legend - Premium */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
@@ -157,12 +157,12 @@ export default function UseCases() {
           className="flex flex-wrap gap-4 justify-center mt-8"
         >
           {Object.entries(categoryColors).map(([category, color]) => (
-            <div key={category} className="flex items-center gap-2">
+            <div key={category} className="flex items-center gap-2 glass px-4 py-2 rounded-full">
               <div
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: color, boxShadow: `0 0 10px ${color}` }}
               />
-              <span className="text-sm text-gray-500 capitalize">{category}</span>
+              <span className="text-sm text-white/50 capitalize">{category}</span>
             </div>
           ))}
         </motion.div>
