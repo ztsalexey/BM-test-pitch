@@ -184,13 +184,12 @@ export default function UseCases() {
           )}
         </motion.div>
 
-        {/* 3D Word Sphere - Enhanced with orbits and particles */}
+        {/* BitMind Spinner with Use Cases */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 1 }}
-          className="relative h-[800px] flex items-center justify-center overflow-visible"
-          style={{ perspective: '1200px' }}
+          className="relative h-[700px] flex items-center justify-center overflow-visible"
         >
           {/* Enhanced center glow with color breathing */}
           <div className="absolute inset-0 flex items-center justify-center">
