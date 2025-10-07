@@ -2,317 +2,400 @@
 
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef, useState, useMemo } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 export default function DiamondSpinner() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
   const [hoveredWord, setHoveredWord] = useState<string | null>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [autoRotate, setAutoRotate] = useState(true);
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
 
-  // Generate 3D SPHERE with dense mesh
-  const { nodes, connections } = useMemo(() => {
-    const nodesArray = [];
-    const latitudes = 20; // Horizontal layers
-    const longitudesPerLat = 24; // Points around each layer
+  useEffect(() => {
+    let rafId: number;
+    let lastMouseUpdate = 0;
+    const throttleMs = 16; // ~60fps
 
-    for (let lat = 0; lat <= latitudes; lat++) {
-      const theta = (lat / latitudes) * Math.PI; // 0 to PI (top to bottom)
-      const y = Math.cos(theta) * 220; // Vertical position
-      const currentRadius = Math.sin(theta) * 220; // Radius at this latitude
+    const handleMouseMove = (e: MouseEvent) => {
+      const now = Date.now();
+      if (now - lastMouseUpdate < throttleMs) return;
+      lastMouseUpdate = now;
 
-      const numPoints = lat === 0 || lat === latitudes ? 1 : longitudesPerLat;
+      if (ref.current) {
+        const rect = ref.current.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const distanceFromCenter = Math.sqrt(
+          Math.pow(e.clientX - centerX, 2) + Math.pow(e.clientY - centerY, 2)
+        );
 
-      for (let lon = 0; lon < numPoints; lon++) {
-        const phi = (lon / numPoints) * Math.PI * 2; // 0 to 2PI (around)
-        const x = Math.cos(phi) * currentRadius;
-        const z = Math.sin(phi) * currentRadius;
+        // Only control if mouse is reasonably close to sphere
+        if (distanceFromCenter < 400) {
+          const newX = ((e.clientX - rect.left) / rect.width - 0.5) * 25;
+          const newY = ((e.clientY - rect.top) / rect.height - 0.5) * 25;
 
-        nodesArray.push({
-          x,
-          y,
-          z,
-          lat,
-          lon,
-          isPole: lat === 0 || lat === latitudes,
-        });
-      }
-    }
-
-    // Generate connections
-    const connectionsArray = [];
-    const maxDistance = 70;
-
-    for (let i = 0; i < nodesArray.length; i++) {
-      for (let j = i + 1; j < nodesArray.length; j++) {
-        const dx = nodesArray[i].x - nodesArray[j].x;
-        const dy = nodesArray[i].y - nodesArray[j].y;
-        const dz = nodesArray[i].z - nodesArray[j].z;
-        const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-        if (distance < maxDistance) {
-          connectionsArray.push({
-            from: i,
-            to: j,
-            distance,
+          cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(() => {
+            setMousePos({ x: newX, y: newY });
+            setAutoRotate(false);
           });
         }
       }
+    };
+
+    const handleMouseLeave = () => {
+      setAutoRotate(true);
+      setMousePos({ x: 0, y: 0 });
+    };
+
+    const currentRef = ref.current;
+    if (currentRef) {
+      currentRef.addEventListener('mouseleave', handleMouseLeave);
+      currentRef.addEventListener('mousemove', handleMouseMove);
     }
 
-    return { nodes: nodesArray, connections: connectionsArray };
+    return () => {
+      cancelAnimationFrame(rafId);
+      if (currentRef) {
+        currentRef.removeEventListener('mouseleave', handleMouseLeave);
+        currentRef.removeEventListener('mousemove', handleMouseMove);
+      }
+    };
   }, []);
 
-  // Use cases - positioned around sphere
-  const useCases = [
-    // Core - top
-    { text: 'Deepfake Detection', offsetX: 0, offsetY: -0.45, isCore: true, color: '#00FF88' },
+  // Smooth auto-rotation when not hovering
+  useEffect(() => {
+    if (!autoRotate || !isInView) return;
 
-    // Upper ring
-    { text: 'KYC Verification', offsetX: 0.4, offsetY: -0.3, isCore: false, color: '#FFD700' },
-    { text: 'Identity Verification', offsetX: -0.4, offsetY: -0.3, isCore: false, color: '#A78BFA' },
-    { text: 'Age Verification', offsetX: 0.2, offsetY: -0.35, isCore: false, color: '#00FFFF' },
-    { text: 'Document Verification', offsetX: -0.2, offsetY: -0.35, isCore: false, color: '#FF6B9D' },
+    let lastTime = Date.now();
+    let rafId: number;
 
-    // Middle ring
-    { text: 'Content Moderation', offsetX: 0.45, offsetY: -0.05, isCore: false, color: '#FF6B9D' },
-    { text: 'Media Authentication', offsetX: -0.45, offsetY: -0.05, isCore: false, color: '#00D4FF' },
-    { text: 'Brand Protection', offsetX: 0.45, offsetY: 0.1, isCore: false, color: '#88FF00' },
-    { text: 'Trust & Safety', offsetX: -0.45, offsetY: 0.1, isCore: false, color: '#FF88FF' },
+    const animate = () => {
+      const now = Date.now();
+      const delta = (now - lastTime) / 1000; // Convert to seconds
+      lastTime = now;
 
-    // Lower ring
-    { text: 'Fraud Prevention', offsetX: 0.4, offsetY: 0.3, isCore: false, color: '#FFA500' },
-    { text: 'Video Forensics', offsetX: -0.4, offsetY: 0.3, isCore: false, color: '#FF1493' },
-    { text: 'Live Stream Safety', offsetX: 0.2, offsetY: 0.35, isCore: false, color: '#7FFF00' },
-    { text: 'Social Media Protection', offsetX: -0.2, offsetY: 0.35, isCore: false, color: '#BA55D3' },
+      setRotation(prev => ({
+        x: prev.x + (10 * delta), // 10 degrees per second
+        y: prev.y + (15 * delta), // 15 degrees per second
+      }));
 
-    // Bottom ring
-    { text: 'Enterprise Security', offsetX: 0.35, offsetY: 0.45, isCore: false, color: '#00CED1' },
-    { text: 'Government ID', offsetX: -0.35, offsetY: 0.45, isCore: false, color: '#FFB6C1' },
-    { text: 'Financial Services', offsetX: 0, offsetY: 0.48, isCore: false, color: '#DDA0DD' },
+      rafId = requestAnimationFrame(animate);
+    };
+
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
+  }, [autoRotate, isInView]);
+
+  // Generate orbital particles
+  const generateOrbitalParticles = (count: number, radius: number, color: string) => {
+    return Array.from({ length: count }, (_, i) => {
+      const angle = (i / count) * Math.PI * 2;
+      return {
+        x: Math.cos(angle) * radius,
+        y: Math.sin(angle) * radius,
+        delay: i * 0.05,
+        color,
+      };
+    });
+  };
+
+  const orbitalRings = [
+    { particles: generateOrbitalParticles(16, 280, '#00FF88'), speed: 30 },
+    { particles: generateOrbitalParticles(12, 350, '#00D4FF'), speed: 40 },
+    { particles: generateOrbitalParticles(8, 420, '#A78BFA'), speed: 50 },
   ];
 
+  // Use case keywords arranged in 3D sphere
+  const words = [
+    // Center core
+    { text: 'Deepfake Detection', size: 36, x: 0, y: 0, z: 0, category: 'core' },
+
+    // Inner ring
+    { text: 'KYC Verification', size: 24, x: -150, y: -80, z: 50, category: 'finance' },
+    { text: 'Content Moderation', size: 24, x: 150, y: -80, z: 50, category: 'social' },
+    { text: 'Fraud Prevention', size: 26, x: 0, y: 120, z: 50, category: 'finance' },
+    { text: 'Identity Verification', size: 22, x: 0, y: -140, z: 50, category: 'finance' },
+
+    // Middle ring
+    { text: 'Video Verification', size: 28, x: -200, y: 60, z: -30, category: 'core' },
+    { text: 'Image Analysis', size: 28, x: 200, y: 60, z: -30, category: 'core' },
+    { text: 'Similarity Score', size: 20, x: -180, y: -140, z: -30, category: 'tech' },
+    { text: 'Real-time Detection', size: 21, x: 180, y: -140, z: -30, category: 'tech' },
+
+    // Outer ring
+    { text: 'CEO Fraud Defense', size: 19, x: -280, y: -40, z: -80, category: 'finance' },
+    { text: 'Wire Transfer Protection', size: 17, x: 280, y: -40, z: -80, category: 'finance' },
+    { text: 'UGC Verification', size: 20, x: -240, y: 120, z: -80, category: 'social' },
+    { text: 'Trust & Safety', size: 19, x: 240, y: 120, z: -80, category: 'social' },
+    { text: 'Source Verification', size: 20, x: 0, y: -220, z: -80, category: 'media' },
+    { text: 'Fact Checking', size: 19, x: 0, y: 220, z: -80, category: 'media' },
+
+    // Far edges
+    { text: 'Scam Detection', size: 18, x: -320, y: 80, z: -120, category: 'social' },
+    { text: 'Compliance', size: 20, x: 320, y: 80, z: -120, category: 'enterprise' },
+    { text: 'Video Call Auth', size: 18, x: -300, y: -120, z: -120, category: 'enterprise' },
+    { text: 'Remote Hiring', size: 17, x: 300, y: -120, z: -120, category: 'enterprise' },
+    { text: 'News Integrity', size: 18, x: 0, y: 280, z: -120, category: 'media' },
+    { text: 'API Integration', size: 17, x: 0, y: -280, z: -120, category: 'tech' },
+    { text: 'Batch Processing', size: 16, x: -160, y: 240, z: -120, category: 'tech' },
+    { text: 'Insider Threat', size: 16, x: 160, y: 240, z: -120, category: 'enterprise' },
+  ];
+
+  const categoryColors = {
+    core: '#00FF88',
+    finance: '#FFD700',
+    social: '#FF6B9D',
+    media: '#00D4FF',
+    enterprise: '#A78BFA',
+    tech: '#FFA500',
+  };
+
   return (
-    <section ref={ref} className="min-h-screen flex items-center justify-center px-6 py-20 bg-black overflow-hidden">
-      <div className="max-w-7xl mx-auto w-full">
+    <section ref={ref} className="min-h-screen flex items-center justify-center px-6 py-20">
+      <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12 md:mb-16"
+          className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 tracking-tight">
-            Universal <span className="gradient-text">Use Cases</span>
+          <h2 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
+            One API, <span className="gradient-text">Infinite Use Cases</span>
           </h2>
           {/* Fixed height container to prevent flickering */}
-          <div className="h-[28px] md:h-[32px] flex items-center justify-center">
-            <p className="text-lg md:text-xl text-white/60">
-              {hoveredWord || 'AI-powered deepfake detection across industries'}
+          <div className="h-[32px] flex items-center justify-center mb-2">
+            <p className="text-xl text-white/60">
+              {hoveredWord ? (
+                <motion.span
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="gradient-text font-semibold"
+                >
+                  {hoveredWord}
+                </motion.span>
+              ) : (
+                'Interactive 3D sphere · Hover to explore'
+              )}
             </p>
           </div>
+          {!hoveredWord && (
+            <p className="text-sm text-white/40">
+              Auto-rotating · Move mouse to control
+            </p>
+          )}
         </motion.div>
 
-        {/* 3D Sphere - Responsive Container */}
-        <div className="relative w-full h-[600px] sm:h-[700px] lg:h-[800px] flex items-center justify-center">
-          <div
-            className="relative w-full h-full max-w-[900px] mx-auto"
-            style={{
-              perspective: '1400px',
-              perspectiveOrigin: '50% 50%',
-            }}
-          >
-            {/* Rotating sphere */}
+        {/* 3D Word Sphere - Enhanced with orbits and particles */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 1 }}
+          className="relative h-[800px] flex items-center justify-center overflow-visible"
+          style={{ perspective: '1200px' }}
+        >
+          {/* Enhanced center glow with color breathing */}
+          <div className="absolute inset-0 flex items-center justify-center">
             <motion.div
               animate={{
-                rotateY: 360,
+                scale: [1, 1.1, 1],
+                opacity: [0.15, 0.25, 0.15],
               }}
-              transition={{
-                rotateY: { duration: 25, repeat: Infinity, ease: "linear" },
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="w-[500px] h-[500px] bg-bitmind-accent rounded-full blur-3xl"
+            />
+            <motion.div
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.1, 0.2, 0.1],
               }}
-              className="absolute inset-0 flex items-center justify-center"
-              style={{
-                transformStyle: 'preserve-3d',
-                transform: 'rotateX(15deg) rotateZ(0deg)', // Slight tilt for depth
-                willChange: 'transform',
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              className="absolute w-[400px] h-[400px] bg-cyan-500 rounded-full blur-3xl"
+            />
+            <motion.div
+              animate={{
+                scale: [1, 1.15, 1],
+                opacity: [0.2, 0.3, 0.2],
               }}
-            >
-              {/* SVG mesh */}
-              <svg
-                viewBox="-400 -400 800 800"
-                className="absolute w-full h-full"
-                preserveAspectRatio="xMidYMid meet"
-                style={{
-                  filter: 'drop-shadow(0 0 30px rgba(0, 255, 136, 0.25)) drop-shadow(0 0 60px rgba(0, 212, 255, 0.15))',
-                }}
-              >
-                <defs>
-                  <linearGradient id="sphereGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#00FF88" stopOpacity="0.3" />
-                    <stop offset="50%" stopColor="#00D4FF" stopOpacity="0.4" />
-                    <stop offset="100%" stopColor="#A78BFA" stopOpacity="0.25" />
-                  </linearGradient>
-                  <radialGradient id="nodeGradSphere">
-                    <stop offset="0%" stopColor="#00FF88" stopOpacity="1" />
-                    <stop offset="100%" stopColor="#00D4FF" stopOpacity="0.7" />
-                  </radialGradient>
-                  <radialGradient id="poleGrad">
-                    <stop offset="0%" stopColor="#00FF88" stopOpacity="1" />
-                    <stop offset="50%" stopColor="#00D4FF" stopOpacity="0.9" />
-                    <stop offset="100%" stopColor="#A78BFA" stopOpacity="0.7" />
-                  </radialGradient>
-                </defs>
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              className="absolute w-[300px] h-[300px] bg-purple-500 rounded-full blur-2xl"
+            />
+          </div>
 
-                {/* Connections - transparent mesh */}
-                {connections.map((conn, i) => {
-                  const from = nodes[conn.from];
-                  const to = nodes[conn.to];
-                  const opacity = 0.1 + (1 - conn.distance / 70) * 0.2;
+          {/* Orbital rings with particles */}
+          {orbitalRings.map((ring, ringIndex) => (
+            <div key={ringIndex} className="absolute inset-0 flex items-center justify-center">
+              {ring.particles.map((particle, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{
+                    opacity: [0.3, 0.8, 0.3],
+                    scale: [0.5, 1, 0.5],
+                    x: particle.x,
+                    y: particle.y,
+                  }}
+                  transition={{
+                    opacity: { duration: 2, repeat: Infinity, delay: particle.delay },
+                    scale: { duration: 2, repeat: Infinity, delay: particle.delay },
+                    x: { duration: ring.speed, repeat: Infinity, ease: "linear" },
+                    y: { duration: ring.speed, repeat: Infinity, ease: "linear" },
+                  }}
+                  className="absolute w-1.5 h-1.5 rounded-full"
+                  style={{
+                    background: particle.color,
+                    boxShadow: `0 0 12px ${particle.color}, 0 0 24px ${particle.color}40`,
+                  }}
+                />
+              ))}
+            </div>
+          ))}
 
-                  return (
-                    <line
-                      key={`conn-${i}`}
-                      x1={from.x}
-                      y1={from.y}
-                      x2={to.x}
-                      y2={to.y}
-                      stroke="url(#sphereGrad)"
-                      strokeWidth="0.8"
-                      strokeOpacity={opacity}
-                      strokeLinecap="round"
-                    />
-                  );
-                })}
+          {/* Connection lines between close particles */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.15 }}>
+            <defs>
+              <radialGradient id="lineGradient">
+                <stop offset="0%" stopColor="#00FF88" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#00FF88" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+            {/* Draw connecting lines */}
+            <motion.circle
+              cx="50%"
+              cy="50%"
+              r="280"
+              fill="none"
+              stroke="url(#lineGradient)"
+              strokeWidth="1"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 0.3 }}
+              transition={{ duration: 2, delay: 0.5 }}
+            />
+            <motion.circle
+              cx="50%"
+              cy="50%"
+              r="350"
+              fill="none"
+              stroke="#00D4FF"
+              strokeWidth="1"
+              strokeOpacity="0.2"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 2, delay: 0.7 }}
+            />
+            <motion.circle
+              cx="50%"
+              cy="50%"
+              r="420"
+              fill="none"
+              stroke="#A78BFA"
+              strokeWidth="1"
+              strokeOpacity="0.15"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 2, delay: 0.9 }}
+            />
+          </svg>
 
-                {/* Nodes */}
-                {nodes.map((node, i) => {
-                  const isHighlight = i % 5 === 0 || node.isPole;
-                  const size = node.isPole ? 6 : isHighlight ? 3.5 : 2;
+          {/* Word cloud with 3D transform and auto-rotation */}
+          <div
+            className="relative w-full h-full flex items-center justify-center"
+            style={{
+              transform: autoRotate
+                ? `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`
+                : `rotateX(${-mousePos.y}deg) rotateY(${mousePos.x}deg)`,
+              transformStyle: 'preserve-3d',
+              transition: 'transform 0.1s linear',
+              willChange: 'transform',
+            }}
+          >
+            {words.map((word, i) => {
+              const delay = i * 0.03;
+              const color = categoryColors[word.category as keyof typeof categoryColors];
+              const scale = 1 + word.z / 500; // Closer items are larger
 
-                  return (
-                    <circle
-                      key={`node-${i}`}
-                      cx={node.x}
-                      cy={node.y}
-                      r={size}
-                      fill={node.isPole ? "url(#poleGrad)" : isHighlight ? "url(#nodeGradSphere)" : "#ffffff"}
-                      opacity={node.isPole ? 1 : isHighlight ? 0.8 : 0.55}
-                      style={{
-                        filter: node.isPole
-                          ? 'drop-shadow(0 0 15px #00FF88) drop-shadow(0 0 25px #00D4FF)'
-                          : isHighlight
-                          ? 'drop-shadow(0 0 8px rgba(0, 255, 136, 0.7))'
-                          : 'none',
-                      }}
-                    />
-                  );
-                })}
-              </svg>
-            </motion.div>
-
-            {/* Use case labels - Responsive positioning */}
-            {useCases.map((item, i) => {
-              const isHovered = hoveredWord === item.text;
+              const isHovered = hoveredWord === word.text;
+              const isFaded = hoveredWord && !isHovered;
 
               return (
                 <motion.div
-                  key={`label-${i}`}
-                  initial={{ opacity: 0, scale: 0.6 }}
+                  key={i}
+                  initial={{ opacity: 0, scale: 0 }}
                   animate={isInView ? {
-                    opacity: hoveredWord && !isHovered ? 0.25 : 1,
-                    scale: 1, // No scale change on hover to prevent flickering
-                  } : { opacity: 0, scale: 0.6 }}
+                    opacity: isFaded ? 0.15 : (0.7 + word.z / 200),
+                    scale: scale, // No scale changes on hover
+                  } : {}}
                   transition={{
-                    duration: 0.7,
-                    delay: 0.8 + i * 0.06,
+                    duration: 0.6,
+                    delay,
+                    opacity: { duration: 0.2 }
                   }}
-                  className="absolute cursor-pointer whitespace-nowrap select-none z-10"
+                  className="absolute cursor-pointer whitespace-nowrap select-none pointer-events-auto"
                   style={{
-                    left: '50%',
-                    top: '50%',
-                    transform: `translate(calc(-50% + ${item.offsetX * 100}%), calc(-50% + ${item.offsetY * 100}%))`,
+                    left: `calc(50% + ${word.x}px)`,
+                    top: `calc(50% + ${word.y}px)`,
+                    transform: `translateZ(${word.z}px) translate(-50%, -50%)`,
+                    fontSize: `${word.size * scale}px`,
+                    color: isHovered ? color : word.category === 'core' ? '#fff' : '#e0e0e0',
+                    textShadow: isHovered
+                      ? `0 0 80px ${color}, 0 0 140px ${color}dd, 0 0 200px ${color}70, 0 12px 40px ${color}aa`
+                      : word.category === 'core'
+                      ? `0 0 35px rgba(0,255,136,0.6), 0 0 70px rgba(0,255,136,0.3), 0 6px 25px rgba(0,255,136,0.2)`
+                      : `0 0 25px rgba(0,255,136,0.25)`,
+                    fontWeight: word.category === 'core' ? 'bold' : isHovered ? '800' : '500',
+                    zIndex: isHovered ? 999 : Math.round(word.z + 100),
+                    letterSpacing: isHovered ? '0.1em' : word.category === 'core' ? '0.02em' : 'normal',
+                    filter: isHovered ? 'blur(0px) brightness(1.3)' : `blur(${Math.max(0, -word.z / 150)}px)`,
+                    transition: 'all 0.15s ease-out',
+                    padding: '4px 8px',
                   }}
-                  onMouseEnter={() => setHoveredWord(item.text)}
-                  onMouseLeave={() => setHoveredWord(null)}
+                  onMouseEnter={() => {
+                    setHoveredWord(word.text);
+                    setAutoRotate(false);
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredWord(null);
+                  }}
                 >
-                  <div
-                    className="relative px-2 sm:px-3 py-1 sm:py-1.5 rounded-md backdrop-blur-md transition-all duration-200"
-                    style={{
-                      fontSize: item.isCore
-                        ? 'clamp(16px, 2.5vw, 20px)'
-                        : 'clamp(11px, 1.5vw, 14px)',
-                      color: isHovered ? item.color : '#fff',
-                      textShadow: isHovered
-                        ? `0 0 25px ${item.color}, 0 0 45px ${item.color}90`
-                        : item.isCore
-                        ? '0 0 20px rgba(255,255,255,0.6)'
-                        : '0 0 15px rgba(255,255,255,0.3)',
-                      fontWeight: item.isCore ? (isHovered ? '800' : '700') : (isHovered ? '700' : '600'),
-                      background: isHovered
-                        ? `linear-gradient(135deg, ${item.color}30, ${item.color}10)`
-                        : item.isCore
-                        ? 'rgba(0,0,0,0.7)'
-                        : 'rgba(0,0,0,0.5)',
-                      border: isHovered
-                        ? `1.5px solid ${item.color}80`
-                        : item.isCore
-                        ? '1.5px solid rgba(0, 255, 136, 0.4)'
-                        : '1px solid rgba(255,255,255,0.2)',
-                      boxShadow: isHovered
-                        ? `0 0 35px ${item.color}50, 0 8px 30px rgba(0,0,0,0.9)`
-                        : item.isCore
-                        ? '0 0 25px rgba(0, 255, 136, 0.3), 0 5px 25px rgba(0,0,0,0.8)'
-                        : '0 4px 20px rgba(0,0,0,0.7)',
-                    }}
-                  >
-                    {item.text}
-                    {isHovered && (
-                      <motion.div
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 1 }}
-                        className="absolute -bottom-0.5 left-0 right-0 h-px rounded-full"
-                        style={{
-                          background: `linear-gradient(90deg, transparent, ${item.color}, transparent)`,
-                          boxShadow: `0 0 20px ${item.color}`,
-                        }}
-                      />
-                    )}
-                  </div>
+                  {word.text}
+                  {/* Subtle hover indicator */}
+                  {isHovered && (
+                    <motion.div
+                      initial={{ scaleX: 0, opacity: 0 }}
+                      animate={{ scaleX: 1, opacity: 0.8 }}
+                      exit={{ scaleX: 0, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="absolute -bottom-1 left-0 right-0 h-px rounded-full"
+                      style={{
+                        background: `linear-gradient(90deg, transparent 10%, ${color} 50%, transparent 90%)`,
+                        boxShadow: `0 0 12px ${color}`,
+                      }}
+                    />
+                  )}
                 </motion.div>
               );
             })}
-
-            {/* Energy particles orbiting */}
-            {[...Array(60)].map((_, i) => {
-              const angle = (i / 60) * Math.PI * 2;
-              const radiusPercent = 0.25 + Math.random() * 0.25;
-              const heightPercent = (Math.random() - 0.5) * 0.5;
-
-              return (
-                <motion.div
-                  key={`particle-${i}`}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{
-                    opacity: [0, 0.8, 0],
-                    scale: [0, 1.4, 0],
-                  }}
-                  transition={{
-                    duration: 2 + Math.random() * 3,
-                    repeat: Infinity,
-                    delay: Math.random() * 6,
-                    ease: "easeInOut"
-                  }}
-                  className="absolute w-1 h-1 rounded-full pointer-events-none"
-                  style={{
-                    left: '50%',
-                    top: '50%',
-                    transform: `translate(calc(-50% + ${Math.cos(angle) * radiusPercent * 100}%), calc(-50% + ${heightPercent * 100}%))`,
-                    background: i % 4 === 0 ? '#00FF88' : i % 4 === 1 ? '#00D4FF' : i % 4 === 2 ? '#A78BFA' : '#FFD700',
-                    boxShadow: `0 0 12px ${i % 4 === 0 ? '#00FF88' : i % 4 === 1 ? '#00D4FF' : i % 4 === 2 ? '#A78BFA' : '#FFD700'}`,
-                  }}
-                />
-              );
-            })}
           </div>
-        </div>
+        </motion.div>
+
+        {/* Category Legend - Premium */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="flex flex-wrap gap-4 justify-center mt-8"
+        >
+          {Object.entries(categoryColors).map(([category, color]) => (
+            <div key={category} className="flex items-center gap-2 glass px-4 py-2 rounded-full">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: color, boxShadow: `0 0 10px ${color}` }}
+              />
+              <span className="text-sm text-white/50 capitalize">{category}</span>
+            </div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );
