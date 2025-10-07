@@ -46,19 +46,38 @@ export default function UseCases() {
     };
   }, []);
 
-  // Auto-rotation when not hovering
+  // Smooth auto-rotation when not hovering
   useEffect(() => {
     if (!autoRotate || !isInView) return;
 
     const interval = setInterval(() => {
       setRotation(prev => ({
-        x: prev.x + 0.15,
-        y: prev.y + 0.2,
+        x: prev.x + 0.12,
+        y: prev.y + 0.18,
       }));
     }, 50);
 
     return () => clearInterval(interval);
   }, [autoRotate, isInView]);
+
+  // Generate orbital particles
+  const generateOrbitalParticles = (count: number, radius: number, color: string) => {
+    return Array.from({ length: count }, (_, i) => {
+      const angle = (i / count) * Math.PI * 2;
+      return {
+        x: Math.cos(angle) * radius,
+        y: Math.sin(angle) * radius,
+        delay: i * 0.05,
+        color,
+      };
+    });
+  };
+
+  const orbitalRings = [
+    { particles: generateOrbitalParticles(16, 280, '#00FF88'), speed: 30 },
+    { particles: generateOrbitalParticles(12, 350, '#00D4FF'), speed: 40 },
+    { particles: generateOrbitalParticles(8, 420, '#A78BFA'), speed: 50 },
+  ];
 
   // Use case keywords arranged in 3D sphere
   const words = [
@@ -137,20 +156,116 @@ export default function UseCases() {
           )}
         </motion.div>
 
-        {/* 3D Word Sphere */}
+        {/* 3D Word Sphere - Enhanced with orbits and particles */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 1 }}
-          className="relative h-[700px] flex items-center justify-center overflow-hidden"
-          style={{ perspective: '1000px' }}
+          className="relative h-[800px] flex items-center justify-center overflow-visible"
+          style={{ perspective: '1200px' }}
         >
-          {/* Enhanced center glow with multiple layers */}
+          {/* Enhanced center glow with color breathing */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-96 h-96 bg-bitmind-accent/10 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute w-64 h-64 bg-cyan-500/5 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
-            <div className="absolute w-32 h-32 bg-bitmind-accent/20 rounded-full blur-xl" />
+            <motion.div
+              animate={{
+                scale: [1, 1.1, 1],
+                opacity: [0.15, 0.25, 0.15],
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="w-[500px] h-[500px] bg-bitmind-accent rounded-full blur-3xl"
+            />
+            <motion.div
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.1, 0.2, 0.1],
+              }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              className="absolute w-[400px] h-[400px] bg-cyan-500 rounded-full blur-3xl"
+            />
+            <motion.div
+              animate={{
+                scale: [1, 1.15, 1],
+                opacity: [0.2, 0.3, 0.2],
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              className="absolute w-[300px] h-[300px] bg-purple-500 rounded-full blur-2xl"
+            />
           </div>
+
+          {/* Orbital rings with particles */}
+          {orbitalRings.map((ring, ringIndex) => (
+            <div key={ringIndex} className="absolute inset-0 flex items-center justify-center">
+              {ring.particles.map((particle, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{
+                    opacity: [0.3, 0.8, 0.3],
+                    scale: [0.5, 1, 0.5],
+                    x: particle.x,
+                    y: particle.y,
+                  }}
+                  transition={{
+                    opacity: { duration: 2, repeat: Infinity, delay: particle.delay },
+                    scale: { duration: 2, repeat: Infinity, delay: particle.delay },
+                    x: { duration: ring.speed, repeat: Infinity, ease: "linear" },
+                    y: { duration: ring.speed, repeat: Infinity, ease: "linear" },
+                  }}
+                  className="absolute w-1.5 h-1.5 rounded-full"
+                  style={{
+                    background: particle.color,
+                    boxShadow: `0 0 12px ${particle.color}, 0 0 24px ${particle.color}40`,
+                  }}
+                />
+              ))}
+            </div>
+          ))}
+
+          {/* Connection lines between close particles */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.15 }}>
+            <defs>
+              <radialGradient id="lineGradient">
+                <stop offset="0%" stopColor="#00FF88" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#00FF88" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+            {/* Draw connecting lines */}
+            <motion.circle
+              cx="50%"
+              cy="50%"
+              r="280"
+              fill="none"
+              stroke="url(#lineGradient)"
+              strokeWidth="1"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 0.3 }}
+              transition={{ duration: 2, delay: 0.5 }}
+            />
+            <motion.circle
+              cx="50%"
+              cy="50%"
+              r="350"
+              fill="none"
+              stroke="#00D4FF"
+              strokeWidth="1"
+              strokeOpacity="0.2"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 2, delay: 0.7 }}
+            />
+            <motion.circle
+              cx="50%"
+              cy="50%"
+              r="420"
+              fill="none"
+              stroke="#A78BFA"
+              strokeWidth="1"
+              strokeOpacity="0.15"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 2, delay: 0.9 }}
+            />
+          </svg>
 
           {/* Word cloud with 3D transform and auto-rotation */}
           <div
@@ -196,15 +311,22 @@ export default function UseCases() {
                     top: `calc(50% + ${word.y}px)`,
                     transform: `translateZ(${word.z}px) translate(-50%, -50%)`,
                     fontSize: `${word.size * scale}px`,
+                    background: isHovered
+                      ? `linear-gradient(135deg, ${color}40 0%, ${color}20 100%)`
+                      : 'transparent',
+                    WebkitBackgroundClip: isHovered ? 'text' : 'unset',
+                    WebkitTextFillColor: isHovered ? 'transparent' : (word.category === 'core' ? '#fff' : '#ddd'),
                     color: isHovered ? color : word.category === 'core' ? '#fff' : '#ddd',
                     textShadow: isHovered
-                      ? `0 0 50px ${color}, 0 0 100px ${color}, 0 0 150px ${color}60, 0 4px 20px ${color}40`
+                      ? `0 0 60px ${color}, 0 0 120px ${color}80, 0 0 180px ${color}40, 0 8px 32px ${color}60`
                       : word.category === 'core'
-                      ? `0 0 25px rgba(0,255,136,0.4), 0 0 50px rgba(0,255,136,0.2)`
-                      : `0 0 15px rgba(0,255,136,0.2)`,
-                    fontWeight: word.category === 'core' ? 'bold' : isHovered ? '700' : '500',
+                      ? `0 0 30px rgba(0,255,136,0.5), 0 0 60px rgba(0,255,136,0.25), 0 4px 20px rgba(0,255,136,0.15)`
+                      : `0 0 20px rgba(0,255,136,0.2)`,
+                    fontWeight: word.category === 'core' ? 'bold' : isHovered ? '800' : '500',
                     zIndex: isHovered ? 999 : Math.round(word.z + 100),
-                    letterSpacing: isHovered ? '0.05em' : 'normal',
+                    letterSpacing: isHovered ? '0.08em' : 'normal',
+                    padding: isHovered ? '8px 16px' : '0',
+                    borderRadius: isHovered ? '8px' : '0',
                   }}
                   onMouseEnter={() => {
                     setHoveredWord(word.text);
@@ -215,17 +337,52 @@ export default function UseCases() {
                   }}
                 >
                   {word.text}
-                  {/* Hover indicator */}
+                  {/* Enhanced hover effects */}
                   {isHovered && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-0.5 rounded-full"
-                      style={{
-                        background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
-                        boxShadow: `0 0 10px ${color}`,
-                      }}
-                    />
+                    <>
+                      {/* Animated underline */}
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-16 h-1 rounded-full"
+                        style={{
+                          background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
+                          boxShadow: `0 0 20px ${color}, 0 0 40px ${color}60`,
+                        }}
+                      />
+                      {/* Glow pulse effect */}
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{
+                          opacity: [0, 0.4, 0],
+                          scale: [0.8, 1.5, 2],
+                        }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                        className="absolute inset-0 rounded-lg"
+                        style={{
+                          background: `radial-gradient(circle, ${color}40 0%, transparent 70%)`,
+                        }}
+                      />
+                      {/* Corner accents */}
+                      {[0, 90, 180, 270].map((rotate, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: i * 0.05 }}
+                          className="absolute w-2 h-2"
+                          style={{
+                            top: i < 2 ? '-4px' : 'auto',
+                            bottom: i >= 2 ? '-4px' : 'auto',
+                            left: i === 0 || i === 3 ? '-4px' : 'auto',
+                            right: i === 1 || i === 2 ? '-4px' : 'auto',
+                            background: color,
+                            boxShadow: `0 0 8px ${color}`,
+                            borderRadius: '2px',
+                          }}
+                        />
+                      ))}
+                    </>
                   )}
                 </motion.div>
               );
