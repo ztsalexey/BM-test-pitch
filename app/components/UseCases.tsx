@@ -320,32 +320,32 @@ export default function UseCases() {
                   key={i}
                   initial={{ opacity: 0, scale: 0 }}
                   animate={isInView ? {
-                    opacity: isFaded ? 0.1 : (0.6 + word.z / 200),
-                    scale: isHovered ? scale * 1.5 : scale,
+                    opacity: isFaded ? 0.15 : (0.7 + word.z / 200),
+                    scale: scale, // No scale changes on hover
                   } : {}}
                   transition={{
                     duration: 0.6,
                     delay,
-                    scale: { duration: 0.2, type: "spring", stiffness: 300, damping: 15 },
-                    opacity: { duration: 0.25 }
+                    opacity: { duration: 0.2 }
                   }}
-                  className="absolute cursor-pointer whitespace-nowrap select-none"
+                  className="absolute cursor-pointer whitespace-nowrap select-none pointer-events-auto"
                   style={{
                     left: `calc(50% + ${word.x}px)`,
                     top: `calc(50% + ${word.y}px)`,
                     transform: `translateZ(${word.z}px) translate(-50%, -50%)`,
                     fontSize: `${word.size * scale}px`,
-                    color: isHovered ? color : word.category === 'core' ? '#fff' : '#ddd',
+                    color: isHovered ? color : word.category === 'core' ? '#fff' : '#e0e0e0',
                     textShadow: isHovered
-                      ? `0 0 60px ${color}, 0 0 120px ${color}dd, 0 0 180px ${color}80, 0 8px 32px ${color}99`
+                      ? `0 0 80px ${color}, 0 0 140px ${color}dd, 0 0 200px ${color}70, 0 12px 40px ${color}aa`
                       : word.category === 'core'
-                      ? `0 0 30px rgba(0,255,136,0.5), 0 0 60px rgba(0,255,136,0.25), 0 4px 20px rgba(0,255,136,0.15)`
-                      : `0 0 20px rgba(0,255,136,0.2)`,
+                      ? `0 0 35px rgba(0,255,136,0.6), 0 0 70px rgba(0,255,136,0.3), 0 6px 25px rgba(0,255,136,0.2)`
+                      : `0 0 25px rgba(0,255,136,0.25)`,
                     fontWeight: word.category === 'core' ? 'bold' : isHovered ? '800' : '500',
                     zIndex: isHovered ? 999 : Math.round(word.z + 100),
-                    letterSpacing: isHovered ? '0.08em' : 'normal',
-                    filter: isHovered ? 'blur(0px) brightness(1.2)' : `blur(${Math.max(0, -word.z / 150)}px)`,
-                    transition: 'filter 0.2s ease-out, color 0.2s ease-out, letter-spacing 0.2s ease-out, font-weight 0.2s ease-out',
+                    letterSpacing: isHovered ? '0.1em' : word.category === 'core' ? '0.02em' : 'normal',
+                    filter: isHovered ? 'blur(0px) brightness(1.3)' : `blur(${Math.max(0, -word.z / 150)}px)`,
+                    transition: 'all 0.15s ease-out',
+                    padding: '4px 8px',
                   }}
                   onMouseEnter={() => {
                     setHoveredWord(word.text);
@@ -356,35 +356,19 @@ export default function UseCases() {
                   }}
                 >
                   {word.text}
-                  {/* Smooth hover effects */}
+                  {/* Subtle hover indicator */}
                   {isHovered && (
-                    <>
-                      {/* Animated underline - appears below text */}
-                      <motion.div
-                        initial={{ scaleX: 0, opacity: 0 }}
-                        animate={{ scaleX: 1, opacity: 1 }}
-                        transition={{ duration: 0.3, ease: "easeOut" }}
-                        className="absolute -bottom-2 left-0 right-0 h-0.5 rounded-full"
-                        style={{
-                          background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
-                          boxShadow: `0 0 15px ${color}`,
-                        }}
-                      />
-                      {/* Pulsing glow effect behind text */}
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{
-                          opacity: [0, 0.3, 0],
-                          scale: [0.9, 1.3, 1.6],
-                        }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute inset-0 -z-10"
-                        style={{
-                          background: `radial-gradient(circle, ${color}60 0%, transparent 60%)`,
-                          filter: 'blur(20px)',
-                        }}
-                      />
-                    </>
+                    <motion.div
+                      initial={{ scaleX: 0, opacity: 0 }}
+                      animate={{ scaleX: 1, opacity: 0.8 }}
+                      exit={{ scaleX: 0, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="absolute -bottom-1 left-0 right-0 h-px rounded-full"
+                      style={{
+                        background: `linear-gradient(90deg, transparent 10%, ${color} 50%, transparent 90%)`,
+                        boxShadow: `0 0 12px ${color}`,
+                      }}
+                    />
                   )}
                 </motion.div>
               );
