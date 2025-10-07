@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -11,7 +13,7 @@
 body {
   background: #0A0A0A;
   color: white;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: 'JetBrains Mono', monospace;
   overflow-x: hidden;
 }
 
@@ -25,5 +27,200 @@ body {
 
   .glow {
     box-shadow: 0 0 40px rgba(0, 255, 136, 0.3);
+  }
+
+  /* Glitch effect */
+  .glitch {
+    position: relative;
+    animation: glitch 2s infinite;
+  }
+
+  @keyframes glitch {
+    0%, 100% {
+      transform: translate(0);
+    }
+    20% {
+      transform: translate(-2px, 2px);
+    }
+    40% {
+      transform: translate(-2px, -2px);
+    }
+    60% {
+      transform: translate(2px, 2px);
+    }
+    80% {
+      transform: translate(2px, -2px);
+    }
+  }
+
+  /* Pixel corruption effect */
+  .pixel-corrupt {
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 136, 0.03) 2px,
+        rgba(0, 255, 136, 0.03) 4px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 136, 0.03) 2px,
+        rgba(0, 255, 136, 0.03) 4px
+      );
+    animation: pixel-drift 8s infinite linear;
+  }
+
+  @keyframes pixel-drift {
+    0% {
+      background-position: 0 0, 0 0;
+    }
+    100% {
+      background-position: 100px 100px, -100px -100px;
+    }
+  }
+
+  /* RGB split effect */
+  .rgb-split {
+    position: relative;
+  }
+
+  .rgb-split::before,
+  .rgb-split::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+  }
+
+  .rgb-split::before {
+    color: #00FF88;
+    animation: rgb-split-1 3s infinite;
+  }
+
+  .rgb-split::after {
+    color: #FF006E;
+    animation: rgb-split-2 3s infinite;
+  }
+
+  @keyframes rgb-split-1 {
+    0%, 100% {
+      transform: translate(0);
+      opacity: 0;
+    }
+    33% {
+      transform: translate(-2px, 0);
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes rgb-split-2 {
+    0%, 100% {
+      transform: translate(0);
+      opacity: 0;
+    }
+    66% {
+      transform: translate(2px, 0);
+      opacity: 0.8;
+    }
+  }
+
+  /* Scan line effect */
+  .scanline {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scanline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 255, 136, 0.1) 50%,
+      transparent 100%
+    );
+    animation: scanline 6s infinite linear;
+    pointer-events: none;
+  }
+
+  @keyframes scanline {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(100%);
+    }
+  }
+
+  /* Deepfake distortion */
+  .deepfake-distort {
+    animation: deepfake-distort 4s infinite;
+  }
+
+  @keyframes deepfake-distort {
+    0%, 100% {
+      filter: none;
+    }
+    25% {
+      filter: hue-rotate(5deg) saturate(1.2);
+    }
+    50% {
+      filter: hue-rotate(-5deg) saturate(0.8);
+    }
+    75% {
+      filter: hue-rotate(3deg) saturate(1.1);
+    }
+  }
+
+  /* Cyber grid background */
+  .cyber-grid {
+    background-image:
+      linear-gradient(rgba(0, 255, 136, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 136, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    background-position: 0 0, 0 0;
+    animation: cyber-grid 20s linear infinite;
+  }
+
+  @keyframes cyber-grid {
+    0% {
+      background-position: 0 0, 0 0;
+    }
+    100% {
+      background-position: 30px 30px, -30px -30px;
+    }
+  }
+
+  /* Holographic effect */
+  .holographic {
+    background: linear-gradient(
+      45deg,
+      #00FF88 0%,
+      #00D4FF 25%,
+      #FF006E 50%,
+      #00D4FF 75%,
+      #00FF88 100%
+    );
+    background-size: 400% 400%;
+    animation: holographic 8s ease infinite;
+  }
+
+  @keyframes holographic {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
   }
 }
