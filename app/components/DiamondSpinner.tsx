@@ -111,50 +111,91 @@ export default function DiamondSpinner() {
           className="relative h-[700px] flex items-center justify-center"
           style={{ perspective: '1400px' }}
         >
-          {/* Independent rotating particle sphere */}
+          {/* Independent rotating particle sphere - encompasses use cases */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            {/* Center glow - behind everything */}
             <motion.div
-              className="relative w-[500px] h-[500px]"
+              animate={{
+                scale: [1, 1.08, 1],
+                opacity: [0.12, 0.2, 0.12],
+              }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              className="w-[500px] h-[500px] bg-gradient-to-r from-bitmind-accent/40 to-cyan-500/40 rounded-full blur-3xl"
+            />
+
+            {/* Rotating 3D particle sphere */}
+            <motion.div
+              className="absolute w-[550px] h-[550px]"
               style={{
                 transformStyle: 'preserve-3d',
                 transform: `rotateY(${sphereRotation}deg) rotateX(15deg)`,
               }}
             >
-              {/* Wireframe sphere particles */}
-              {Array.from({ length: 80 }).map((_, i) => {
-                const phi = Math.acos(-1 + (2 * i) / 80);
-                const theta = Math.sqrt(80 * Math.PI) * phi;
-                const x = 250 * Math.cos(theta) * Math.sin(phi);
-                const y = 250 * Math.sin(theta) * Math.sin(phi);
-                const z = 250 * Math.cos(phi);
+              {/* Dense wireframe sphere particles - 150 particles for better coverage */}
+              {Array.from({ length: 150 }).map((_, i) => {
+                const phi = Math.acos(-1 + (2 * i) / 150);
+                const theta = Math.sqrt(150 * Math.PI) * phi;
+                const radius = 275;
+                const x = radius * Math.cos(theta) * Math.sin(phi);
+                const y = radius * Math.sin(theta) * Math.sin(phi);
+                const z = radius * Math.cos(phi);
+
+                // Calculate opacity based on z-depth for transparency effect
+                const zOpacity = 0.2 + (z / radius) * 0.3;
 
                 return (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, scale: 0 }}
-                    animate={isInView ? { opacity: 0.4, scale: 1 } : {}}
-                    transition={{ duration: 1, delay: i * 0.01 }}
-                    className="absolute w-1 h-1 rounded-full bg-bitmind-accent"
+                    animate={isInView ? { opacity: zOpacity, scale: 1 } : {}}
+                    transition={{ duration: 1.2, delay: i * 0.005 }}
+                    className="absolute w-1.5 h-1.5 rounded-full bg-bitmind-accent"
                     style={{
                       left: '50%',
                       top: '50%',
                       transform: `translate3d(${x}px, ${y}px, ${z}px)`,
-                      boxShadow: '0 0 8px rgba(0, 255, 136, 0.6)',
+                      boxShadow: `0 0 ${6 + zOpacity * 8}px rgba(0, 255, 136, ${zOpacity * 0.8})`,
                     }}
                   />
                 );
               })}
-            </motion.div>
 
-            {/* Center glow */}
-            <motion.div
-              animate={{
-                scale: [1, 1.08, 1],
-                opacity: [0.15, 0.25, 0.15],
-              }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              className="w-[450px] h-[450px] bg-gradient-to-r from-bitmind-accent to-cyan-500 rounded-full blur-3xl"
-            />
+              {/* Orbital rings for extra dimension */}
+              {[0, 60, 120].map((rotationOffset) => (
+                <motion.div
+                  key={rotationOffset}
+                  className="absolute inset-0"
+                  style={{
+                    transformStyle: 'preserve-3d',
+                    transform: `rotateZ(${rotationOffset}deg)`,
+                  }}
+                >
+                  {Array.from({ length: 40 }).map((_, i) => {
+                    const angle = (i / 40) * Math.PI * 2;
+                    const radius = 275;
+                    const x = radius * Math.cos(angle);
+                    const y = radius * Math.sin(angle);
+                    const z = 0;
+
+                    return (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0 }}
+                        animate={isInView ? { opacity: 0.15 } : {}}
+                        transition={{ duration: 1, delay: i * 0.01 }}
+                        className="absolute w-0.5 h-0.5 rounded-full bg-cyan-400"
+                        style={{
+                          left: '50%',
+                          top: '50%',
+                          transform: `translate3d(${x}px, ${y}px, ${z}px)`,
+                          boxShadow: '0 0 4px rgba(0, 212, 255, 0.4)',
+                        }}
+                      />
+                    );
+                  })}
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
 
           {/* Static word cloud - no rotation */}
@@ -175,14 +216,15 @@ export default function DiamondSpinner() {
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, scale: 0.5 }}
-                  animate={isInView ? {
+                  animate={{
                     opacity: isFaded ? 0.15 : (0.75 + word.z / 250),
-                    scale: scale,
-                  } : {}}
+                    scale: isHovered ? scale * 1.08 : scale,
+                  }}
                   transition={{
                     duration: 0.8,
-                    delay: i * 0.05,
-                    opacity: { duration: 0.3 }
+                    delay: isInView ? i * 0.05 : 0,
+                    opacity: { duration: 0.3 },
+                    scale: { duration: 0.25, ease: "easeOut" }
                   }}
                   className="absolute cursor-pointer whitespace-nowrap select-none"
                   style={{
