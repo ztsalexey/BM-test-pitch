@@ -5,25 +5,60 @@ import { useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 
 export default function UseCases() {
-  const ref = useRef(null);
+  const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
   const [hoveredWord, setHoveredWord] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [autoRotate, setAutoRotate] = useState(true);
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (ref.current) {
-        const rect = (ref.current as HTMLElement).getBoundingClientRect();
-        setMousePos({
-          x: ((e.clientX - rect.left) / rect.width - 0.5) * 20,
-          y: ((e.clientY - rect.top) / rect.height - 0.5) * 20,
-        });
+        const rect = ref.current.getBoundingClientRect();
+        const newX = ((e.clientX - rect.left) / rect.width - 0.5) * 30;
+        const newY = ((e.clientY - rect.top) / rect.height - 0.5) * 30;
+
+        setMousePos({ x: newX, y: newY });
+
+        // Disable auto-rotate when hovering
+        if (Math.abs(newX) > 2 || Math.abs(newY) > 2) {
+          setAutoRotate(false);
+        }
       }
     };
 
+    const handleMouseLeave = () => {
+      setAutoRotate(true);
+    };
+
+    const currentRef = ref.current;
+    if (currentRef) {
+      currentRef.addEventListener('mouseleave', handleMouseLeave);
+    }
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (currentRef) {
+        currentRef.removeEventListener('mouseleave', handleMouseLeave);
+      }
+    };
   }, []);
+
+  // Auto-rotation when not hovering
+  useEffect(() => {
+    if (!autoRotate || !isInView) return;
+
+    const interval = setInterval(() => {
+      setRotation(prev => ({
+        x: prev.x + 0.15,
+        y: prev.y + 0.2,
+      }));
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [autoRotate, isInView]);
 
   // Use case keywords arranged in 3D sphere
   const words = [
@@ -82,9 +117,24 @@ export default function UseCases() {
           <h2 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
             One API, <span className="gradient-text">Infinite Use Cases</span>
           </h2>
-          <p className="text-xl text-white/60">
-            Hover to explore
+          <p className="text-xl text-white/60 mb-2">
+            {hoveredWord ? (
+              <motion.span
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="gradient-text font-semibold"
+              >
+                {hoveredWord}
+              </motion.span>
+            ) : (
+              'Interactive 3D sphere · Hover to explore'
+            )}
           </p>
+          {!hoveredWord && (
+            <p className="text-sm text-white/40">
+              Auto-rotating · Move mouse to control
+            </p>
+          )}
         </motion.div>
 
         {/* 3D Word Sphere */}
@@ -102,12 +152,15 @@ export default function UseCases() {
             <div className="absolute w-32 h-32 bg-bitmind-accent/20 rounded-full blur-xl" />
           </div>
 
-          {/* Word cloud with 3D transform */}
+          {/* Word cloud with 3D transform and auto-rotation */}
           <div
-            className="relative w-full h-full flex items-center justify-center transition-transform duration-200 ease-out"
+            className="relative w-full h-full flex items-center justify-center ease-out"
             style={{
-              transform: `rotateX(${-mousePos.y}deg) rotateY(${mousePos.x}deg)`,
+              transform: autoRotate
+                ? `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`
+                : `rotateX(${-mousePos.y}deg) rotateY(${mousePos.x}deg)`,
               transformStyle: 'preserve-3d',
+              transition: autoRotate ? 'none' : 'transform 0.3s ease-out',
             }}
           >
             {words.map((word, i) => {
@@ -115,37 +168,65 @@ export default function UseCases() {
               const color = categoryColors[word.category as keyof typeof categoryColors];
               const scale = 1 + word.z / 500; // Closer items are larger
 
+              const isHovered = hoveredWord === word.text;
+              const isFaded = hoveredWord && !isHovered;
+
               return (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, scale: 0 }}
                   animate={isInView ? {
-                    opacity: hoveredWord && hoveredWord !== word.text ? 0.15 : (0.5 + word.z / 250),
-                    scale: hoveredWord === word.text ? scale * 1.4 : scale,
-                    filter: hoveredWord === word.text ? 'blur(0px)' : `blur(${Math.max(0, -word.z / 150)}px)`
+                    opacity: isFaded ? 0.1 : (0.6 + word.z / 200),
+                    scale: isHovered ? scale * 1.5 : scale,
+                    filter: isHovered ? 'blur(0px)' : `blur(${Math.max(0, -word.z / 150)}px)`,
                   } : {}}
+                  whileHover={{
+                    scale: scale * 1.6,
+                    transition: { duration: 0.2, type: "spring", stiffness: 300 }
+                  }}
                   transition={{
                     duration: 0.6,
                     delay,
-                    scale: { duration: 0.3, type: "spring", stiffness: 200 }
+                    scale: { duration: 0.3, type: "spring", stiffness: 250 },
+                    opacity: { duration: 0.3 }
                   }}
-                  className="absolute cursor-pointer transition-all duration-300 whitespace-nowrap"
+                  className="absolute cursor-pointer transition-all duration-300 whitespace-nowrap select-none"
                   style={{
                     left: `calc(50% + ${word.x}px)`,
                     top: `calc(50% + ${word.y}px)`,
                     transform: `translateZ(${word.z}px) translate(-50%, -50%)`,
                     fontSize: `${word.size * scale}px`,
-                    color: hoveredWord === word.text ? color : '#fff',
-                    textShadow: hoveredWord === word.text
-                      ? `0 0 40px ${color}, 0 0 80px ${color}, 0 0 120px ${color}40`
-                      : `0 0 20px rgba(0,255,136,0.3)`,
-                    fontWeight: word.category === 'core' ? 'bold' : hoveredWord === word.text ? '600' : 'normal',
-                    zIndex: Math.round(word.z + 100),
+                    color: isHovered ? color : word.category === 'core' ? '#fff' : '#ddd',
+                    textShadow: isHovered
+                      ? `0 0 50px ${color}, 0 0 100px ${color}, 0 0 150px ${color}60, 0 4px 20px ${color}40`
+                      : word.category === 'core'
+                      ? `0 0 25px rgba(0,255,136,0.4), 0 0 50px rgba(0,255,136,0.2)`
+                      : `0 0 15px rgba(0,255,136,0.2)`,
+                    fontWeight: word.category === 'core' ? 'bold' : isHovered ? '700' : '500',
+                    zIndex: isHovered ? 999 : Math.round(word.z + 100),
+                    letterSpacing: isHovered ? '0.05em' : 'normal',
                   }}
-                  onMouseEnter={() => setHoveredWord(word.text)}
-                  onMouseLeave={() => setHoveredWord(null)}
+                  onMouseEnter={() => {
+                    setHoveredWord(word.text);
+                    setAutoRotate(false);
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredWord(null);
+                  }}
                 >
                   {word.text}
+                  {/* Hover indicator */}
+                  {isHovered && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-0.5 rounded-full"
+                      style={{
+                        background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
+                        boxShadow: `0 0 10px ${color}`,
+                      }}
+                    />
+                  )}
                 </motion.div>
               );
             })}
