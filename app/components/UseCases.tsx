@@ -293,40 +293,30 @@ export default function UseCases() {
                   animate={isInView ? {
                     opacity: isFaded ? 0.1 : (0.6 + word.z / 200),
                     scale: isHovered ? scale * 1.5 : scale,
-                    filter: isHovered ? 'blur(0px)' : `blur(${Math.max(0, -word.z / 150)}px)`,
                   } : {}}
-                  whileHover={{
-                    scale: scale * 1.6,
-                    transition: { duration: 0.2, type: "spring", stiffness: 300 }
-                  }}
                   transition={{
                     duration: 0.6,
                     delay,
-                    scale: { duration: 0.3, type: "spring", stiffness: 250 },
-                    opacity: { duration: 0.3 }
+                    scale: { duration: 0.2, type: "spring", stiffness: 300, damping: 15 },
+                    opacity: { duration: 0.25 }
                   }}
-                  className="absolute cursor-pointer transition-all duration-300 whitespace-nowrap select-none"
+                  className="absolute cursor-pointer whitespace-nowrap select-none"
                   style={{
                     left: `calc(50% + ${word.x}px)`,
                     top: `calc(50% + ${word.y}px)`,
                     transform: `translateZ(${word.z}px) translate(-50%, -50%)`,
                     fontSize: `${word.size * scale}px`,
-                    background: isHovered
-                      ? `linear-gradient(135deg, ${color}40 0%, ${color}20 100%)`
-                      : 'transparent',
-                    WebkitBackgroundClip: isHovered ? 'text' : 'unset',
-                    WebkitTextFillColor: isHovered ? 'transparent' : (word.category === 'core' ? '#fff' : '#ddd'),
                     color: isHovered ? color : word.category === 'core' ? '#fff' : '#ddd',
                     textShadow: isHovered
-                      ? `0 0 60px ${color}, 0 0 120px ${color}80, 0 0 180px ${color}40, 0 8px 32px ${color}60`
+                      ? `0 0 60px ${color}, 0 0 120px ${color}dd, 0 0 180px ${color}80, 0 8px 32px ${color}99`
                       : word.category === 'core'
                       ? `0 0 30px rgba(0,255,136,0.5), 0 0 60px rgba(0,255,136,0.25), 0 4px 20px rgba(0,255,136,0.15)`
                       : `0 0 20px rgba(0,255,136,0.2)`,
                     fontWeight: word.category === 'core' ? 'bold' : isHovered ? '800' : '500',
                     zIndex: isHovered ? 999 : Math.round(word.z + 100),
                     letterSpacing: isHovered ? '0.08em' : 'normal',
-                    padding: isHovered ? '8px 16px' : '0',
-                    borderRadius: isHovered ? '8px' : '0',
+                    filter: isHovered ? 'blur(0px) brightness(1.2)' : `blur(${Math.max(0, -word.z / 150)}px)`,
+                    transition: 'filter 0.2s ease-out, color 0.2s ease-out, letter-spacing 0.2s ease-out, font-weight 0.2s ease-out',
                   }}
                   onMouseEnter={() => {
                     setHoveredWord(word.text);
@@ -337,51 +327,34 @@ export default function UseCases() {
                   }}
                 >
                   {word.text}
-                  {/* Enhanced hover effects */}
+                  {/* Smooth hover effects */}
                   {isHovered && (
                     <>
-                      {/* Animated underline */}
+                      {/* Animated underline - appears below text */}
                       <motion.div
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-16 h-1 rounded-full"
+                        initial={{ scaleX: 0, opacity: 0 }}
+                        animate={{ scaleX: 1, opacity: 1 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        className="absolute -bottom-2 left-0 right-0 h-0.5 rounded-full"
                         style={{
                           background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
-                          boxShadow: `0 0 20px ${color}, 0 0 40px ${color}60`,
+                          boxShadow: `0 0 15px ${color}`,
                         }}
                       />
-                      {/* Glow pulse effect */}
+                      {/* Pulsing glow effect behind text */}
                       <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
+                        initial={{ opacity: 0 }}
                         animate={{
-                          opacity: [0, 0.4, 0],
-                          scale: [0.8, 1.5, 2],
+                          opacity: [0, 0.3, 0],
+                          scale: [0.9, 1.3, 1.6],
                         }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                        className="absolute inset-0 rounded-lg"
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute inset-0 -z-10"
                         style={{
-                          background: `radial-gradient(circle, ${color}40 0%, transparent 70%)`,
+                          background: `radial-gradient(circle, ${color}60 0%, transparent 60%)`,
+                          filter: 'blur(20px)',
                         }}
                       />
-                      {/* Corner accents */}
-                      {[0, 90, 180, 270].map((rotate, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: i * 0.05 }}
-                          className="absolute w-2 h-2"
-                          style={{
-                            top: i < 2 ? '-4px' : 'auto',
-                            bottom: i >= 2 ? '-4px' : 'auto',
-                            left: i === 0 || i === 3 ? '-4px' : 'auto',
-                            right: i === 1 || i === 2 ? '-4px' : 'auto',
-                            background: color,
-                            boxShadow: `0 0 8px ${color}`,
-                            borderRadius: '2px',
-                          }}
-                        />
-                      ))}
                     </>
                   )}
                 </motion.div>
