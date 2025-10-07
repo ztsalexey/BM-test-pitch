@@ -95,9 +95,11 @@ export default function UseCases() {
           className="relative h-[700px] flex items-center justify-center overflow-hidden"
           style={{ perspective: '1000px' }}
         >
-          {/* Center glow effect */}
+          {/* Enhanced center glow with multiple layers */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-96 h-96 bg-bitmind-accent/10 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute w-64 h-64 bg-cyan-500/5 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
+            <div className="absolute w-32 h-32 bg-bitmind-accent/20 rounded-full blur-xl" />
           </div>
 
           {/* Word cloud with 3D transform */}
@@ -118,15 +120,16 @@ export default function UseCases() {
                   key={i}
                   initial={{ opacity: 0, scale: 0 }}
                   animate={isInView ? {
-                    opacity: hoveredWord && hoveredWord !== word.text ? 0.2 : (0.4 + word.z / 300),
-                    scale: hoveredWord === word.text ? scale * 1.3 : scale
+                    opacity: hoveredWord && hoveredWord !== word.text ? 0.15 : (0.5 + word.z / 250),
+                    scale: hoveredWord === word.text ? scale * 1.4 : scale,
+                    filter: hoveredWord === word.text ? 'blur(0px)' : `blur(${Math.max(0, -word.z / 150)}px)`
                   } : {}}
                   transition={{
                     duration: 0.6,
                     delay,
-                    scale: { duration: 0.2 }
+                    scale: { duration: 0.3, type: "spring", stiffness: 200 }
                   }}
-                  className="absolute cursor-pointer transition-all duration-200 whitespace-nowrap"
+                  className="absolute cursor-pointer transition-all duration-300 whitespace-nowrap"
                   style={{
                     left: `calc(50% + ${word.x}px)`,
                     top: `calc(50% + ${word.y}px)`,
@@ -134,10 +137,10 @@ export default function UseCases() {
                     fontSize: `${word.size * scale}px`,
                     color: hoveredWord === word.text ? color : '#fff',
                     textShadow: hoveredWord === word.text
-                      ? `0 0 30px ${color}, 0 0 60px ${color}`
-                      : `0 0 15px rgba(0,255,136,0.4)`,
-                    fontWeight: word.category === 'core' ? 'bold' : 'normal',
-                    zIndex: Math.round(word.z),
+                      ? `0 0 40px ${color}, 0 0 80px ${color}, 0 0 120px ${color}40`
+                      : `0 0 20px rgba(0,255,136,0.3)`,
+                    fontWeight: word.category === 'core' ? 'bold' : hoveredWord === word.text ? '600' : 'normal',
+                    zIndex: Math.round(word.z + 100),
                   }}
                   onMouseEnter={() => setHoveredWord(word.text)}
                   onMouseLeave={() => setHoveredWord(null)}
