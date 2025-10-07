@@ -15,7 +15,7 @@ export default function Solution() {
       description: 'vs 69% industry standard',
     },
     {
-      icon: '⚡',
+      icon: '◢',
       title: 'Real-Time',
       description: '<100ms detection for images',
     },
