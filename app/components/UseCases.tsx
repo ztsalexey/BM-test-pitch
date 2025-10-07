@@ -13,35 +13,53 @@ export default function UseCases() {
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
+    let rafId: number;
+    let lastMouseUpdate = 0;
+    const throttleMs = 16; // ~60fps
+
     const handleMouseMove = (e: MouseEvent) => {
+      const now = Date.now();
+      if (now - lastMouseUpdate < throttleMs) return;
+      lastMouseUpdate = now;
+
       if (ref.current) {
         const rect = ref.current.getBoundingClientRect();
-        const newX = ((e.clientX - rect.left) / rect.width - 0.5) * 30;
-        const newY = ((e.clientY - rect.top) / rect.height - 0.5) * 30;
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const distanceFromCenter = Math.sqrt(
+          Math.pow(e.clientX - centerX, 2) + Math.pow(e.clientY - centerY, 2)
+        );
 
-        setMousePos({ x: newX, y: newY });
+        // Only control if mouse is reasonably close to sphere
+        if (distanceFromCenter < 400) {
+          const newX = ((e.clientX - rect.left) / rect.width - 0.5) * 25;
+          const newY = ((e.clientY - rect.top) / rect.height - 0.5) * 25;
 
-        // Disable auto-rotate when hovering
-        if (Math.abs(newX) > 2 || Math.abs(newY) > 2) {
-          setAutoRotate(false);
+          cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(() => {
+            setMousePos({ x: newX, y: newY });
+            setAutoRotate(false);
+          });
         }
       }
     };
 
     const handleMouseLeave = () => {
       setAutoRotate(true);
+      setMousePos({ x: 0, y: 0 });
     };
 
     const currentRef = ref.current;
     if (currentRef) {
       currentRef.addEventListener('mouseleave', handleMouseLeave);
+      currentRef.addEventListener('mousemove', handleMouseMove);
     }
 
-    window.addEventListener('mousemove', handleMouseMove);
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(rafId);
       if (currentRef) {
         currentRef.removeEventListener('mouseleave', handleMouseLeave);
+        currentRef.removeEventListener('mousemove', handleMouseMove);
       }
     };
   }, []);
@@ -50,14 +68,24 @@ export default function UseCases() {
   useEffect(() => {
     if (!autoRotate || !isInView) return;
 
-    const interval = setInterval(() => {
-      setRotation(prev => ({
-        x: prev.x + 0.12,
-        y: prev.y + 0.18,
-      }));
-    }, 50);
+    let lastTime = Date.now();
+    let rafId: number;
 
-    return () => clearInterval(interval);
+    const animate = () => {
+      const now = Date.now();
+      const delta = (now - lastTime) / 1000; // Convert to seconds
+      lastTime = now;
+
+      setRotation(prev => ({
+        x: prev.x + (10 * delta), // 10 degrees per second
+        y: prev.y + (15 * delta), // 15 degrees per second
+      }));
+
+      rafId = requestAnimationFrame(animate);
+    };
+
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
   }, [autoRotate, isInView]);
 
   // Generate orbital particles
@@ -269,13 +297,14 @@ export default function UseCases() {
 
           {/* Word cloud with 3D transform and auto-rotation */}
           <div
-            className="relative w-full h-full flex items-center justify-center ease-out"
+            className="relative w-full h-full flex items-center justify-center"
             style={{
               transform: autoRotate
                 ? `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`
                 : `rotateX(${-mousePos.y}deg) rotateY(${mousePos.x}deg)`,
               transformStyle: 'preserve-3d',
-              transition: autoRotate ? 'none' : 'transform 0.3s ease-out',
+              transition: 'transform 0.1s linear',
+              willChange: 'transform',
             }}
           >
             {words.map((word, i) => {
