@@ -341,11 +341,11 @@ export default function DiamondSpinner() {
                       : word.category === 'core'
                       ? `0 0 35px rgba(0,255,136,0.6), 0 0 70px rgba(0,255,136,0.3), 0 6px 25px rgba(0,255,136,0.2)`
                       : `0 0 25px rgba(0,255,136,0.25)`,
-                    fontWeight: word.category === 'core' ? 'bold' : isHovered ? '800' : '500',
+                    fontWeight: word.category === 'core' ? 'bold' : '500',
                     zIndex: isHovered ? 999 : Math.round(word.z + 100),
-                    letterSpacing: isHovered ? '0.1em' : word.category === 'core' ? '0.02em' : 'normal',
+                    letterSpacing: word.category === 'core' ? '0.02em' : 'normal',
                     filter: isHovered ? 'blur(0px) brightness(1.3)' : `blur(${Math.max(0, -word.z / 150)}px)`,
-                    transition: 'all 0.15s ease-out',
+                    transition: 'color 0.15s ease-out, text-shadow 0.15s ease-out, filter 0.15s ease-out',
                     padding: '4px 8px',
                   }}
                   onMouseEnter={() => {
