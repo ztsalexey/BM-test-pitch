@@ -94,21 +94,28 @@ export default function DiamondSpinner() {
   );
 
   return (
-    <section ref={ref} className="min-h-screen flex items-center justify-center px-6 py-20 bg-black relative overflow-hidden">
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* Clean Header */}
+    <section
+      ref={ref}
+      className="min-h-screen flex items-center justify-center px-4 sm:px-6 py-16 sm:py-20 bg-black relative overflow-hidden"
+      aria-label="Use Cases Sphere Visualization"
+    >
+      <div className="max-w-7xl w-full mx-auto relative z-10">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-12 sm:mb-16"
         >
-          <h2 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 tracking-tight px-4">
             One API, <span className="gradient-text">Infinite Use Cases</span>
           </h2>
 
-          <div className="h-[32px] w-full max-w-3xl mx-auto flex items-center justify-center">
-            <motion.p className="text-xl absolute">
+          <div className="h-8 w-full max-w-3xl mx-auto flex items-center justify-center px-4">
+            <motion.p
+              className="text-lg sm:text-xl absolute"
+              aria-live="polite"
+            >
               {hoveredWord ? (
                 <span className="gradient-text font-semibold">
                   {hoveredWord}
@@ -122,18 +129,20 @@ export default function DiamondSpinner() {
           </div>
         </motion.div>
 
-        {/* Clean 3D Sphere */}
+        {/* 3D Sphere Visualization */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="relative h-[700px] flex items-center justify-center"
+          className="relative h-[500px] sm:h-[600px] lg:h-[700px] flex items-center justify-center"
           style={{ perspective: '1400px' }}
+          role="img"
+          aria-label="Interactive 3D visualization of use cases"
         >
           {/* Background effects */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
             {/* Ambient particle cloud */}
-            <div className="absolute w-[600px] h-[600px]">
+            <div className="absolute w-[300px] h-[300px] sm:w-[450px] sm:h-[450px] lg:w-[600px] lg:h-[600px]">
               {ambientParticles.map((particle, i) => (
                 <motion.div
                   key={`ambient-${i}`}
@@ -148,13 +157,13 @@ export default function DiamondSpinner() {
                     delay: particle.delay,
                     ease: "easeInOut"
                   }}
-                  className="absolute rounded-full bg-bitmind-accent"
+                  className="absolute rounded-full bg-bitmind-accent will-change-[opacity,transform]"
                   style={{
                     left: '50%',
                     top: '50%',
                     width: `${particle.size}px`,
                     height: `${particle.size}px`,
-                    transform: `translate(${particle.x}px, ${particle.y}px)`,
+                    transform: `translate(${particle.x * 0.7}px, ${particle.y * 0.7}px)`,
                     boxShadow: `0 0 ${particle.size * 4}px rgba(0, 255, 136, ${particle.opacity * 0.5})`,
                   }}
                 />
@@ -163,17 +172,18 @@ export default function DiamondSpinner() {
 
             {/* Rotating wireframe sphere */}
             <motion.div
-              className="absolute w-[550px] h-[550px]"
+              className="absolute w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] lg:w-[550px] lg:h-[550px]"
               style={{
                 transformStyle: 'preserve-3d',
                 transform: `rotateY(${sphereRotation}deg) rotateX(15deg)`,
+                willChange: 'transform',
               }}
             >
               {/* Sphere particles */}
               {Array.from({ length: 100 }).map((_, i) => {
                 const phi = Math.acos(-1 + (2 * i) / 100);
                 const theta = Math.sqrt(100 * Math.PI) * phi;
-                const radius = 275;
+                const radius = 200;
                 const x = radius * Math.cos(theta) * Math.sin(phi);
                 const y = radius * Math.sin(theta) * Math.sin(phi);
                 const z = radius * Math.cos(phi);
@@ -208,7 +218,7 @@ export default function DiamondSpinner() {
                 >
                   {Array.from({ length: 40 }).map((_, i) => {
                     const a = (i / 40) * Math.PI * 2;
-                    const r = 275;
+                    const r = 200;
                     const x = r * Math.cos(a);
                     const y = r * Math.sin(a);
 
@@ -239,11 +249,11 @@ export default function DiamondSpinner() {
                 opacity: [0.12, 0.2, 0.12],
               }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              className="w-[400px] h-[400px] bg-gradient-to-r from-bitmind-accent/30 to-cyan-500/30 rounded-full blur-3xl"
+              className="w-[250px] h-[250px] sm:w-[350px] sm:h-[350px] lg:w-[400px] lg:h-[400px] bg-gradient-to-r from-bitmind-accent/30 to-cyan-500/30 rounded-full blur-3xl will-change-[opacity,transform]"
             />
           </div>
 
-          {/* Static interactive use cases */}
+          {/* Interactive use cases */}
           <motion.div
             className="relative w-full h-full flex items-center justify-center"
             style={{ transformStyle: 'preserve-3d' }}
@@ -254,9 +264,15 @@ export default function DiamondSpinner() {
               const isHovered = hoveredWord === word.text;
               const isFaded = hoveredWord && !isHovered;
 
+              // Responsive scaling for mobile
+              const mobileScale = 0.6;
+              const tabletScale = 0.8;
+
               return (
-                <motion.div
+                <motion.button
                   key={i}
+                  type="button"
+                  aria-label={`${word.text} use case`}
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={{
                     opacity: isFaded ? 0.15 : (0.8 + word.z / 280),
@@ -268,12 +284,12 @@ export default function DiamondSpinner() {
                     opacity: { duration: 0.3 },
                     scale: { duration: 0.25, ease: "easeOut" }
                   }}
-                  className="absolute cursor-pointer whitespace-nowrap select-none"
+                  className="absolute cursor-pointer whitespace-nowrap select-none touch-manipulation"
                   style={{
-                    left: `calc(50% + ${word.x}px)`,
-                    top: `calc(50% + ${word.y}px)`,
+                    left: `calc(50% + ${word.x * mobileScale}px)`,
+                    top: `calc(50% + ${word.y * mobileScale}px)`,
                     transform: `translateZ(${word.z}px) translate(-50%, -50%)`,
-                    fontSize: `${word.size * depthScale}px`,
+                    fontSize: `${word.size * depthScale * mobileScale}px`,
                     color: isHovered ? color : word.category === 'core' ? '#ffffff' : '#e8e8e8',
                     textShadow: isHovered
                       ? `0 0 50px ${color}, 0 0 90px ${color}aa, 0 4px 25px ${color}66`
@@ -289,12 +305,31 @@ export default function DiamondSpinner() {
                       ? `blur(${Math.abs(word.z) / 120}px) brightness(0.9)`
                       : 'blur(0px)',
                     transition: 'color 0.2s ease-out, text-shadow 0.2s ease-out, filter 0.2s ease-out',
-                    padding: '6px 10px',
+                    padding: '4px 8px',
                     pointerEvents: 'auto',
                   }}
                   onMouseEnter={() => setHoveredWord(word.text)}
                   onMouseLeave={() => setHoveredWord(null)}
+                  onFocus={() => setHoveredWord(word.text)}
+                  onBlur={() => setHoveredWord(null)}
                 >
+                  <style jsx>{`
+                    @media (min-width: 640px) {
+                      button {
+                        left: calc(50% + ${word.x * tabletScale}px) !important;
+                        top: calc(50% + ${word.y * tabletScale}px) !important;
+                        font-size: ${word.size * depthScale * tabletScale}px !important;
+                      }
+                    }
+                    @media (min-width: 1024px) {
+                      button {
+                        left: calc(50% + ${word.x}px) !important;
+                        top: calc(50% + ${word.y}px) !important;
+                        font-size: ${word.size * depthScale}px !important;
+                        padding: 6px 10px !important;
+                      }
+                    }
+                  `}</style>
                   {word.text}
 
                   {/* Hover underline */}
@@ -310,7 +345,7 @@ export default function DiamondSpinner() {
                       }}
                     />
                   )}
-                </motion.div>
+                </motion.button>
               );
             })}
           </motion.div>
@@ -321,13 +356,16 @@ export default function DiamondSpinner() {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.8, delay: 0.5 }}
-          className="flex flex-wrap gap-3 justify-center mt-12"
+          className="flex flex-wrap gap-2 sm:gap-3 justify-center mt-8 sm:mt-12 px-4"
+          role="list"
+          aria-label="Use case categories"
         >
           {Object.entries(categoryColors).map(([category, color]) => (
             <motion.div
               key={category}
+              role="listitem"
               whileHover={{ scale: 1.05 }}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-full cursor-default"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full cursor-default"
               style={{
                 backdropFilter: 'blur(12px)',
                 background: 'rgba(0,0,0,0.3)',
@@ -335,13 +373,14 @@ export default function DiamondSpinner() {
               }}
             >
               <div
-                className="w-2.5 h-2.5 rounded-full"
+                className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full flex-shrink-0"
                 style={{
                   backgroundColor: color,
                   boxShadow: `0 0 8px ${color}`
                 }}
+                aria-hidden="true"
               />
-              <span className="text-xs text-white/60 capitalize font-medium tracking-wide">
+              <span className="text-xs sm:text-sm text-white/60 capitalize font-medium tracking-wide">
                 {category}
               </span>
             </motion.div>
